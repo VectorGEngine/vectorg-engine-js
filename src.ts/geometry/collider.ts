@@ -1253,6 +1253,7 @@ export class ColliderDesc {
     activeCollisionTypes: ActiveCollisionTypes;
     contactForceEventThreshold: number;
     contactSkin: number;
+    materialName: string;
 
     /**
      * Initializes a collider descriptor from the collision shape.
@@ -1280,6 +1281,7 @@ export class ColliderDesc {
         this.centerOfMass = VectorOps.zeros();
         this.contactForceEventThreshold = 0.0;
         this.contactSkin = 0.0;
+        this.materialName = '';
 
         // #if DIM2
         this.principalAngularInertia = 0.0;
@@ -1969,4 +1971,9 @@ export class ColliderDesc {
         this.contactForceEventThreshold = threshold;
         return this;
     }
+
+    public setMaterialName(name: string): ColliderDesc {
+        this.materialName = name;
+        return this;
+    } 
 }

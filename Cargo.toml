@@ -10,7 +10,7 @@ strip = true # Workaround for https://github.com/bevyengine/bevy/issues/16030 (t
 
 [patch.crates-io]
 #rapier2d = { path = "../rapier/crates/rapier2d" }
-#rapier3d = { path = "../rapier/crates/rapier3d" }
+rapier3d = { path = "../rapier/crates/rapier3d" }
 #parry2d = { path = "../parry/crates/parry2d" }
 #parry3d = { path = "../parry/crates/parry3d" }
 #nalgebra = { path = "../nalgebra" }

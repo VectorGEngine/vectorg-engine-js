@@ -110,6 +110,7 @@ export class ColliderSet {
             rawInertiaFrame,
             // #endif
             desc.density,
+            desc.materialName,
             desc.friction,
             desc.restitution,
             desc.frictionCombineRule,

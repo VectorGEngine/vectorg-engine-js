@@ -129,7 +129,7 @@ export class RigidBodySet {
         // #endif
 
         const body = new RigidBody(this.raw, colliderSet, handle);
-        body.userData = desc.userData;
+        body.setUserData(desc.userData);
 
         this.map.set(handle, body);
 

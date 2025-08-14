@@ -1108,6 +1108,13 @@ export class RigidBody {
         return VectorOps.fromRaw(this.rawSet.rbUserTorque(this.handle));
     }
     // #endif
+
+    public setUserData(data: unknown) {
+        this.userData = data;
+        if (typeof data === 'number') {
+            this.rawSet.rbSetUserData(this.handle, data as number);
+        }
+    }
 }
 
 export class RigidBodyDesc {

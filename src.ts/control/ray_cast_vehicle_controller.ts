@@ -276,14 +276,14 @@ export class DynamicRayCastVehicleController {
     }
 
     /**
-     * The maximum amount of braking impulse applied on the i-th wheel to slow down the vehicle.
+     * The maximum amount of braking multiplier applied on the i-th wheel to slow down the vehicle.
      */
     public wheelBrake(i: number): number | null {
         return this.raw.wheel_brake(i);
     }
 
     /**
-     * Set the maximum amount of braking impulse applied on the i-th wheel to slow down the vehicle.
+     * Set the maximum amount of braking multiplier applied on the i-th wheel to slow down the vehicle.
      */
     public setWheelBrake(i: number, value: number) {
         this.raw.set_wheel_brake(i, value);
@@ -395,6 +395,163 @@ export class DynamicRayCastVehicleController {
         this.raw.set_wheel_side_friction_stiffness(i, value);
     }
 
+    /**
+     *  The i-th wheel’s current target angle (radians) on its axle.
+     */
+    public wheelTargetRotation(i: number): number | null {
+        return this.raw.wheel_target_rotation(i);
+    }
+
+    /**
+     * The i-th wheel’s target rotation angle (radians) on its axle.
+     */
+    public setWheelTargetRotation(i: number, value: number) {
+        this.raw.set_wheel_target_rotation(i, value);
+    }
+
+    /**
+     * The i-th wheel’s brake force.
+     *
+     * This is the maximum amount of braking impulse applied on the i-th wheel to slow down the vehicle.
+     */
+    public wheelMaxBrakeForce(i: number): number | null {
+        return this.raw.wheel_max_brake_force(i);
+    }
+
+    /**
+     * The i-th wheel’s brake force.
+     *
+     * This is the maximum amount of braking impulse applied on the i-th wheel to slow down the vehicle.
+     */
+    public setWheelMaxBrakeForce(i: number, value: number) {
+        this.raw.set_wheel_max_brake_force(i, value);
+    }
+
+    /**
+     * The i-th wheel’s anti-lock brake value.
+     *
+     * This is the anti-lock brake value applied on the i-th wheel to prevent it from locking up.
+     * 0.0 means no anti-lock brake is applied, 1.0 means the maximum anti-lock brake is applied.
+     */
+    public wheelAntiLockBrake(i: number): number {
+        return this.raw.wheel_anti_lock_brake(i);
+    }
+
+    public wheelIsAntiLockBrake(i: number): boolean {
+        return this.raw.wheel_is_anti_lock_brake(i);
+    }
+
+    /**
+     * The i-th wheel’s anti-lock brake value.
+     *
+     * This is the anti-lock brake value applied on the i-th wheel to prevent it from locking up.
+     * 0 means no anti-lock brake is applied, 1 means the maximum anti-lock brake is applied.
+     */
+    public setWheelAntiLockBrake(i: number, value: number) {
+        this.raw.set_wheel_anti_lock_brake(i, value);
+    }
+
+
+    /**
+     * The i-th wheel’s anti-roll value.
+     *
+     * This is the anti-roll value applied on the i-th wheel to prevent the vehicle from rolling over.
+     * 0.0 means no anti-roll is applied, 1.0 means the maximum anti-roll is applied.
+     */
+    public wheelAntiRoll(i: number): number | null {
+        return this.raw.wheel_anti_roll(i);
+    }
+
+    /**
+     * The i-th wheel’s anti-roll value.
+     *
+     * This is the anti-roll value applied on the i-th wheel to prevent the vehicle from rolling over.
+     * 0 means no anti-roll is applied, 1 means the maximum anti-roll is applied.
+     */
+    public setWheelAntiRoll(i: number, value: number) {
+        this.raw.set_wheel_anti_roll(i, value);
+    }
+
+    /**
+     * The i-th wheel’s traction control value.
+     *
+     * This is the traction control value applied on the i-th wheel to prevent it from slipping.
+     * 0.0 means no traction control is applied, 1.0 means the maximum traction control is applied.
+     */
+    public wheelTractionControl(i: number): number | null {
+        return this.raw.wheel_traction_control(i);
+    }
+
+    /**
+     * Sets the i-th wheel’s traction control value.
+     *
+     * This is the traction control value applied on the i-th wheel to prevent it from slipping.
+     * 0 means no traction control is applied, 1 means the maximum traction control is applied.
+     */
+    public setWheelTractionControl(i: number, value: number) {
+        this.raw.set_wheel_traction_control(i, value);
+    }
+
+    /**
+     * The i-th wheel’s tire type.
+     *
+     * The tire type defines how the tire behaves on different surfaces.
+     */
+    public wheelTireType(i: number): string | null {
+        return this.raw.wheel_tire_type(i);
+    }
+
+    /**
+     * Sets the i-th wheel’s tire type.
+     *
+     * The tire type defines how the tire behaves on different surfaces.
+     */
+    public setWheelTireType(i: number, tireType: string) {
+        this.raw.set_wheel_tire_type(i, tireType);
+    }
+
+    public addTireType(tireType: string, friction:number): DynamicRayCastVehicleController {
+        this.raw.add_tire_type(tireType, friction);
+        return this;
+    }
+
+    public addSurfaceToTireType(tireType: string, surface: string, friction: number): DynamicRayCastVehicleController {
+        this.raw.add_surface_to_tire_type(tireType, surface, friction);
+        return this;
+    }
+
+    public wheelSideFactor(i: number): number | null {
+        return this.raw.wheel_side_factor(i);
+    }
+
+    public setWheelSideFactor(i: number, value: number) {
+        this.raw.set_wheel_side_factor(i, value);
+    }
+
+    public wheelForwardFactor(i: number): number | null {
+        return this.raw.wheel_forward_factor(i);
+    }
+
+    public setWheelForwardFactor(i: number, value: number) {
+        this.raw.set_wheel_forward_factor(i, value);
+    }
+
+    public wheelBrakeFactor(i: number): number | null {
+        return this.raw.wheel_brake_factor(i);
+    }
+
+    public setWheelBrakeFactor(i: number, value: number) {
+        this.raw.set_wheel_brake_factor(i, value);
+    }
+
+    public wheelContactDamping(i: number): number | null {
+        return this.raw.wheel_contact_damping(i);
+    }
+
+    public setWheelContactDamping(i: number, value: number) {
+        this.raw.set_wheel_contact_damping(i, value);
+    }
+
     /*
      * Getters only.
      */
@@ -404,6 +561,60 @@ export class DynamicRayCastVehicleController {
      */
     public wheelRotation(i: number): number | null {
         return this.raw.wheel_rotation(i);
+    }
+
+    /**
+     *  The i-th wheel’s current rotation angle (radians) on its axle.
+     */
+    public wheelDeltaRotation(i: number): number | null {
+        return this.raw.wheel_delta_rotation(i);
+    }
+
+    /**
+     *  The i-th wheel’s skid info.
+     *
+     *  This is a value between 0.0 and 1.0 that indicates how much the wheel is skidding.
+     *  A value of 0.0 means the wheel is not skidding, while a value of 1.0 means the wheel is fully skidding.
+     */
+    public wheelSkidInfo(i: number): number | null {
+        return this.raw.wheel_skid_info(i);
+    }    
+
+    /**
+     *  The i-th wheel’s ground friction.
+     *
+     *  This is a value between 0.0 and 1.0 that indicates how much the wheel is affected by ground friction.
+     *  A value of 0.0 means no ground friction is applied, while a value of 1.0 means maximum ground friction is applied.
+     */
+    public wheelGroundFriction(i: number): number | null {
+        return this.raw.wheel_ground_friction(i);
+    }
+
+    /**
+     *  The i-th wheel’s ground type.
+     *
+     *  This is a numeric identifier representing the type of surface the wheel is currently in contact with.
+     *  Different ground types can affect the vehicle's handling and performance.
+     */
+    public wheelGroundType(i: number): string {
+        return this.raw.wheel_ground_type(i);
+    }
+
+    /**
+     *  The i-th wheel’s suspension compression.
+     *
+     *  This is a value between 0.0 and 1.0 that indicates how much the wheel’s suspension is compressed.
+     *  A value of 0.0 means the suspension is not compressed, while a value of 1.0 means the suspension is fully compressed.
+     */
+    public wheelSuspensionCompressionRate(i: number): number | null {
+        return this.raw.wheel_suspension_compression_rate(i);
+    }
+
+    /**
+     *  The i-th wheel’s engine force feedback.
+     */
+    public wheelEngineForceFeedback(i: number): number | null {
+        return this.raw.wheel_engine_force_feedback(i);
     }
 
     /**

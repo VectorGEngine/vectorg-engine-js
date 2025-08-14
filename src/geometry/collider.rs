@@ -608,6 +608,10 @@ impl RawColliderSet {
         self.map(handle, |co| co.contact_skin())
     }
 
+    pub fn coMaterialName(&self, handle: FlatHandle) -> String {
+        self.map(handle, |co| co.material().name.clone())
+    }
+
     /// The friction coefficient of this collider.
     pub fn coFriction(&self, handle: FlatHandle) -> f32 {
         self.map(handle, |co| co.material().friction)
@@ -876,6 +880,10 @@ impl RawColliderSet {
 
     pub fn coSetFriction(&mut self, handle: FlatHandle, friction: f32) {
         self.map_mut(handle, |co| co.set_friction(friction))
+    }
+
+    pub fn coSetMaterialName(&mut self, handle: FlatHandle, material_name: String) {
+        self.map_mut(handle, |co| co.set_material_name(material_name))
     }
 
     pub fn coFrictionCombineRule(&self, handle: FlatHandle) -> u32 {

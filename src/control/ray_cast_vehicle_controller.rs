@@ -267,11 +267,141 @@ impl RawDynamicRayCastVehicleController {
         }
     }
 
+    pub fn wheel_target_rotation(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.target_rotation)
+    }
+    pub fn set_wheel_target_rotation(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.target_rotation = value;
+        }
+    }
+
+    pub fn wheel_max_brake_force(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.max_brake_force)
+    }
+    pub fn set_wheel_max_brake_force(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.max_brake_force = value;
+        }
+    }
+
+    pub fn wheel_anti_lock_brake(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.anti_lock_brake)
+    }
+    pub fn set_wheel_anti_lock_brake(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.anti_lock_brake = value;
+        }
+    }
+
+    pub fn wheel_traction_control(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.traction_control)
+    }
+    pub fn set_wheel_traction_control(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.traction_control = value;
+        }
+    }
+
+    pub fn wheel_anti_roll(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.anti_roll)
+    }
+    pub fn set_wheel_anti_roll(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.anti_roll = value;
+        }
+    }
+
+    pub fn wheel_tire_type(&self, i: usize) -> Option<String> {
+        self.controller.wheels().get(i).map(|w| w.tire_type.clone())
+    }
+    
+    pub fn set_wheel_tire_type(&mut self, i: usize, tire_type: &str) {
+        self.controller.set_wheel_tire_type(i, tire_type)
+    }
+
+    pub fn add_tire_type(&mut self, tire_type: &str, friction: f32) {
+        self.controller.add_tire_type(tire_type, friction);
+    }
+
+    pub fn add_surface_to_tire_type(&mut self, tire_type: &str, surface: &str, friction: f32) {
+        self.controller.add_surface_to_tire_type(tire_type, surface, friction);
+    }
+
+    pub fn wheel_side_factor(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.side_factor)
+    }
+
+    pub fn set_wheel_side_factor(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.side_factor = value;
+        }
+    }
+
+    pub fn wheel_forward_factor(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.fwd_factor)
+    }
+
+    pub fn set_wheel_forward_factor(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.fwd_factor = value;
+        }
+    }
+
+    pub fn wheel_brake_factor(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.brake_factor)
+    }
+
+    pub fn set_wheel_brake_factor(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.brake_factor = value;
+        }
+    }
+
+    pub fn wheel_contact_damping(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.contact_damping)
+    }
+
+    pub fn set_wheel_contact_damping(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.contact_damping = value;
+        }
+    }
+
+
     /*
      * Getters only.
      */
     pub fn wheel_rotation(&self, i: usize) -> Option<Real> {
         self.controller.wheels().get(i).map(|w| w.rotation)
+    }
+
+    pub fn wheel_is_anti_lock_brake(&self, i: usize) -> Option<bool> {
+        self.controller.wheels().get(i).map(|w| w.is_anti_lock_brake)
+    }
+
+    pub fn wheel_delta_rotation(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.delta_rotation)
+    }
+
+    pub fn wheel_skid_info(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.skid_info)
+    }
+
+    pub fn wheel_ground_friction(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.ground_friction)
+    }
+
+    pub fn wheel_ground_type(&self, i: usize) -> Option<String> {
+        self.controller.wheels().get(i).map(|w| w.ground_type.clone())
+    }
+
+    pub fn wheel_engine_force_feedback(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.engine_force_feedback)
+    }
+
+    pub fn wheel_suspension_compression_rate(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.suspension_compression_rate)
     }
 
     pub fn wheel_forward_impulse(&self, i: usize) -> Option<Real> {

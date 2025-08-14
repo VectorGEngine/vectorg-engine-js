@@ -66,6 +66,7 @@ impl RawColliderSet {
         #[cfg(feature = "dim3")] principalAngularInertia: &RawVector,
         #[cfg(feature = "dim3")] angularInertiaFrame: &RawRotation,
         density: f32,
+        materialName: String,
         friction: f32,
         restitution: f32,
         frictionCombineRule: u32,
@@ -86,6 +87,7 @@ impl RawColliderSet {
         let mut builder = ColliderBuilder::new(shape.0.clone())
             .enabled(enabled)
             .position(pos)
+            .material_name(materialName)
             .friction(friction)
             .restitution(restitution)
             .collision_groups(super::unpack_interaction_groups(collisionGroups))
@@ -161,6 +163,7 @@ impl RawColliderSet {
         centerOfMass: &RawVector,
         principalAngularInertia: f32,
         density: f32,
+        materialName: String,
         friction: f32,
         restitution: f32,
         frictionCombineRule: u32,
@@ -187,6 +190,7 @@ impl RawColliderSet {
             centerOfMass,
             principalAngularInertia,
             density,
+            materialName,
             friction,
             restitution,
             frictionCombineRule,
@@ -218,6 +222,7 @@ impl RawColliderSet {
         principalAngularInertia: &RawVector,
         angularInertiaFrame: &RawRotation,
         density: f32,
+        materialName: String,
         friction: f32,
         restitution: f32,
         frictionCombineRule: u32,
@@ -245,6 +250,7 @@ impl RawColliderSet {
             principalAngularInertia,
             angularInertiaFrame,
             density,
+            materialName,
             friction,
             restitution,
             frictionCombineRule,
