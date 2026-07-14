@@ -101,8 +101,22 @@ export class DynamicRayCastVehicleController {
     /**
      * Sets the chassis’ local _forward_ direction (`0 = x, 1 = y, 2 = z`).
      */
-    set setIndexForwardAxis(axis: number) {
+    set indexForwardAxis(axis: number) {
         this.raw.set_index_forward_axis(axis);
+    }
+
+    /**
+     * The ESC (Electronic Stability Control) value of the vehicle.
+     */
+    get esc(): number {
+        return this.raw.esc();
+    }
+
+    /**
+     * Sets the ESC (Electronic Stability Control) value of the vehicle.
+     */
+    set esc(value: number) {
+        this.raw.set_esc(value);
     }
 
     /**

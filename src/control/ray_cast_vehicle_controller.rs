@@ -44,6 +44,13 @@ impl RawDynamicRayCastVehicleController {
         self.controller.index_forward_axis = axis;
     }
 
+    pub fn esc(&self) -> Real {
+        self.controller.esc
+    }
+    pub fn set_esc(&mut self, value: Real) {
+        self.controller.esc = value;
+    }
+
     pub fn add_wheel(
         &mut self,
         chassis_connection_cs: &RawVector,
