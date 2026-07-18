@@ -62,7 +62,10 @@ import {
 import {Coarena} from "../coarena";
 
 // #if DIM3
-import {DynamicRayCastVehicleController} from "../control";
+import {
+    DynamicRayCastVehicleController,
+    VehicleControllerConfig,
+} from "../control";
 
 // #endif
 
@@ -552,12 +555,14 @@ export class World {
      */
     public createVehicleController(
         chassis: RigidBody,
+        config: VehicleControllerConfig,
     ): DynamicRayCastVehicleController {
         let controller = new DynamicRayCastVehicleController(
             chassis,
             this.bodies,
             this.colliders,
             this.queryPipeline,
+            config,
         );
         this.vehicleControllers.add(controller);
         return controller;

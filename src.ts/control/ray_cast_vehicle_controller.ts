@@ -1,8 +1,109 @@
-import {RawDynamicRayCastVehicleController} from "../raw";
+import {
+    RawDynamicRayCastVehicleController,
+    RawVehicleControllerConfig,
+} from "../raw";
 import {Vector, VectorOps} from "../math";
 import {Collider, ColliderSet, InteractionGroups} from "../geometry";
 import {QueryFilterFlags, QueryPipeline} from "../pipeline";
 import {RigidBody, RigidBodyHandle, RigidBodySet} from "../dynamics";
+
+export interface VehicleEngineConfig {
+    horsepower: number;
+    idleRpm: number;
+    maxRpm: number;
+    revLimitRpm: number;
+    inertia: number;
+    frictionTorque: number | null;
+    engineBraking: number;
+    drivetrainEfficiency: number;
+    forceScale: number;
+    gearForceExponent: number;
+    torqueCurve: Array<{rpm: number; torque: number}>;
+}
+
+export interface VehicleTransmissionConfig {
+    reverseRatio: number;
+    forwardRatios: number[];
+    finalDriveRatio: number;
+    automatic: boolean;
+    autoReverse: boolean;
+    clutchResponse: number;
+    shiftCooldown: number;
+    upshiftRangePosition: number;
+    downshiftRangePosition: number;
+    stoppedSpeed: number;
+}
+
+export interface VehicleTurboConfig {
+    enabled: boolean;
+    maxBoost: number;
+    spoolRate: number;
+    releaseRate: number;
+}
+
+export interface VehicleDynamicsConfig {
+    brakeBias: number;
+    absStrength: number;
+    tractionControlStrength: number;
+    escStrength: number;
+    dragCoefficient: number;
+    frontalArea: number;
+    rollingResistance: number;
+    downforceCoefficient: number;
+    baseLinearDamping: number;
+    linearDampingPerSpeed: number;
+    baseAngularDamping: number;
+    angularDampingPerSpeed: number;
+}
+
+export interface VehicleSteeringConfig {
+    maxAngle: number;
+    speedSensitivity: number;
+    minimumSpeedFactor: number;
+    assist: boolean;
+    /** Drift correction strength (`0` = none, `1` = full correction). */
+    driftCorrection: number;
+}
+
+export interface VehicleControllerConfig {
+    engine: VehicleEngineConfig;
+    transmission: VehicleTransmissionConfig;
+    turbo: VehicleTurboConfig;
+    dynamics: VehicleDynamicsConfig;
+    steering: VehicleSteeringConfig;
+}
+
+export interface VehicleInput {
+    throttle: number;
+    brake: number;
+    clutch: number;
+    handbrake: number;
+    steering: number;
+}
+
+export interface VehicleState {
+    engineRpm: number;
+    currentGear: number;
+    reverseDirection: boolean;
+    vehicleSpeed: number;
+    drivenWheelSpeed: number;
+    steeringAngle: number;
+    engineLoad: number;
+    revLimiterAmount: number;
+    turboLoad: number;
+    turboReleaseSequence: number;
+    wheelsInContact: number;
+    absActivity: number;
+    tractionControlActivity: number;
+    forceFeedback: number;
+    steeringFriction: number;
+}
+
+export interface VehicleWheelRole {
+    axle: "front" | "rear";
+    driven: boolean;
+    steered: boolean;
+}
 
 /**
  * A character controller to simulate vehicles using ray-casting for the wheels.
@@ -13,18 +114,85 @@ export class DynamicRayCastVehicleController {
     private colliders: ColliderSet;
     private queries: QueryPipeline;
     private _chassis: RigidBody;
+    private currentState: VehicleState;
 
     constructor(
         chassis: RigidBody,
         bodies: RigidBodySet,
         colliders: ColliderSet,
         queries: QueryPipeline,
+        config: VehicleControllerConfig,
     ) {
-        this.raw = new RawDynamicRayCastVehicleController(chassis.handle);
+        const rawConfig = new RawVehicleControllerConfig();
+        const engine = config.engine;
+        rawConfig.set_engine(
+            engine.horsepower,
+            engine.idleRpm,
+            engine.maxRpm,
+            engine.revLimitRpm,
+            engine.inertia,
+            engine.frictionTorque,
+            engine.engineBraking,
+            engine.drivetrainEfficiency,
+            engine.forceScale,
+            engine.gearForceExponent,
+        );
+        rawConfig.set_torque_curve(
+            new Float32Array(engine.torqueCurve.map((point) => point.rpm)),
+            new Float32Array(engine.torqueCurve.map((point) => point.torque)),
+        );
+        const transmission = config.transmission;
+        rawConfig.set_transmission(
+            transmission.reverseRatio,
+            new Float32Array(transmission.forwardRatios),
+            transmission.finalDriveRatio,
+            transmission.automatic,
+            transmission.autoReverse,
+            transmission.clutchResponse,
+            transmission.shiftCooldown,
+            transmission.upshiftRangePosition,
+            transmission.downshiftRangePosition,
+            transmission.stoppedSpeed,
+        );
+        const turbo = config.turbo;
+        rawConfig.set_turbo(
+            turbo.enabled,
+            turbo.maxBoost,
+            turbo.spoolRate,
+            turbo.releaseRate,
+        );
+        const dynamics = config.dynamics;
+        rawConfig.set_dynamics(
+            dynamics.brakeBias,
+            dynamics.absStrength,
+            dynamics.tractionControlStrength,
+            dynamics.escStrength,
+            dynamics.dragCoefficient,
+            dynamics.frontalArea,
+            dynamics.rollingResistance,
+            dynamics.downforceCoefficient,
+            dynamics.baseLinearDamping,
+            dynamics.linearDampingPerSpeed,
+            dynamics.baseAngularDamping,
+            dynamics.angularDampingPerSpeed,
+        );
+        const steering = config.steering;
+        rawConfig.set_steering(
+            steering.maxAngle,
+            steering.speedSensitivity,
+            steering.minimumSpeedFactor,
+            steering.assist,
+            steering.driftCorrection,
+        );
+        this.raw = new RawDynamicRayCastVehicleController(
+            chassis.handle,
+            rawConfig,
+        );
         this.bodies = bodies;
         this.colliders = colliders;
         this.queries = queries;
         this._chassis = chassis;
+        this.currentState = this.readState();
     }
 
     /** @internal */
@@ -61,6 +229,68 @@ export class DynamicRayCastVehicleController {
             filterGroups,
             this.colliders.castClosure(filterPredicate),
         );
+        this.currentState = this.readState();
+    }
+
+    /** Sets normalized driver inputs consumed by subsequent updates. */
+    public setInput(input: VehicleInput) {
+        this.raw.set_input(
+            input.throttle,
+            input.brake,
+            input.clutch,
+            input.handbrake,
+            input.steering,
+        );
+    }
+
+    /** Requests the next higher gear. */
+    public shiftUp() {
+        this.raw.shift_up();
+    }
+
+    /** Requests the next lower gear. */
+    public shiftDown() {
+        this.raw.shift_down();
+    }
+
+    /** Selects a gear, where -1 is reverse and 0 is neutral. */
+    public setGear(gear: number) {
+        this.raw.set_gear(gear);
+    }
+
+    /** Enables or disables velocity-based counter-steering assistance. */
+    public setSteeringAssist(enabled: boolean) {
+        this.raw.set_steering_assist(enabled);
+    }
+
+    /** Sets drift correction strength (`0` = none, `1` = full correction). */
+    public setDriftCorrection(correction: number) {
+        this.raw.set_drift_correction(correction);
+    }
+
+    /** Current engine, transmission, driver-assistance, and feedback state. */
+    public state(): VehicleState {
+        return this.currentState;
+    }
+
+    private readState(): VehicleState {
+        return {
+            engineRpm: this.raw.engine_rpm(),
+            currentGear: this.raw.current_gear(),
+            reverseDirection: this.raw.reverse_direction(),
+            vehicleSpeed: this.raw.vehicle_speed(),
+            drivenWheelSpeed: this.raw.driven_wheel_speed(),
+            steeringAngle: this.raw.steering_angle(),
+            engineLoad: this.raw.engine_load(),
+            revLimiterAmount: this.raw.rev_limiter_amount(),
+            turboLoad: this.raw.turbo_load(),
+            turboReleaseSequence: this.raw.turbo_release_sequence(),
+            wheelsInContact: this.raw.wheels_in_contact(),
+            absActivity: this.raw.abs_activity(),
+            tractionControlActivity: this.raw.traction_control_activity(),
+            forceFeedback: this.raw.force_feedback(),
+            steeringFriction: this.raw.steering_friction(),
+        };
     }
 
     /**
@@ -134,6 +364,7 @@ export class DynamicRayCastVehicleController {
         axleCs: Vector,
         suspensionRestLength: number,
         radius: number,
+        role: VehicleWheelRole,
     ) {
         let rawChassisConnectionCs = VectorOps.intoRaw(chassisConnectionCs);
         let rawDirectionCs = VectorOps.intoRaw(directionCs);
@@ -145,6 +376,9 @@ export class DynamicRayCastVehicleController {
             rawAxleCs,
             suspensionRestLength,
             radius,
+            role.axle === "front" ? 0 : 1,
+            role.driven,
+            role.steered,
         );
 
         rawChassisConnectionCs.free();

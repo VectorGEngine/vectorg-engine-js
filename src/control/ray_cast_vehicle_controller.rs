@@ -3,10 +3,146 @@ use crate::geometry::RawColliderSet;
 use crate::math::RawVector;
 use crate::pipeline::RawQueryPipeline;
 use crate::utils::{self, FlatHandle};
-use rapier::control::{DynamicRayCastVehicleController, WheelTuning};
+use rapier::control::{
+    DynamicRayCastVehicleController, VehicleControllerConfig, VehicleInput, WheelAxle, WheelRole,
+    WheelTuning,
+};
 use rapier::math::Real;
 use rapier::pipeline::{QueryFilter, QueryFilterFlags};
 use wasm_bindgen::prelude::*;
+
+#[wasm_bindgen]
+pub struct RawVehicleControllerConfig {
+    config: VehicleControllerConfig,
+}
+
+#[wasm_bindgen]
+impl RawVehicleControllerConfig {
+    #[wasm_bindgen(constructor)]
+    pub fn new() -> Self {
+        Self {
+            config: VehicleControllerConfig::default(),
+        }
+    }
+
+    pub fn set_engine(
+        &mut self,
+        horsepower: Real,
+        idle_rpm: Real,
+        max_rpm: Real,
+        rev_limit_rpm: Real,
+        inertia: Real,
+        friction_torque: Option<Real>,
+        engine_braking: Real,
+        drivetrain_efficiency: Real,
+        force_scale: Real,
+        gear_force_exponent: Real,
+    ) {
+        let engine = &mut self.config.engine;
+        engine.horsepower = horsepower;
+        engine.idle_rpm = idle_rpm;
+        engine.max_rpm = max_rpm;
+        engine.rev_limit_rpm = rev_limit_rpm;
+        engine.inertia = inertia;
+        engine.friction_torque = friction_torque;
+        engine.engine_braking = engine_braking;
+        engine.drivetrain_efficiency = drivetrain_efficiency;
+        engine.force_scale = force_scale;
+        engine.gear_force_exponent = gear_force_exponent;
+    }
+
+    pub fn set_torque_curve(&mut self, rpms: js_sys::Float32Array, torques: js_sys::Float32Array) {
+        let rpms = rpms.to_vec();
+        let torques = torques.to_vec();
+        self.config.engine.torque_curve = rpms.into_iter().zip(torques).collect();
+    }
+
+    pub fn set_transmission(
+        &mut self,
+        reverse_ratio: Real,
+        forward_ratios: js_sys::Float32Array,
+        final_drive_ratio: Real,
+        automatic: bool,
+        auto_reverse: bool,
+        clutch_response: Real,
+        shift_cooldown: Real,
+        upshift_range_position: Real,
+        downshift_range_position: Real,
+        stopped_speed: Real,
+    ) {
+        let transmission = &mut self.config.transmission;
+        transmission.reverse_ratio = reverse_ratio;
+        transmission.forward_ratios = forward_ratios.to_vec();
+        transmission.final_drive_ratio = final_drive_ratio;
+        transmission.automatic = automatic;
+        transmission.auto_reverse = auto_reverse;
+        transmission.clutch_response = clutch_response;
+        transmission.shift_cooldown = shift_cooldown;
+        transmission.upshift_range_position = upshift_range_position;
+        transmission.downshift_range_position = downshift_range_position;
+        transmission.stopped_speed = stopped_speed;
+    }
+
+    pub fn set_turbo(
+        &mut self,
+        enabled: bool,
+        max_boost: Real,
+        spool_rate: Real,
+        release_rate: Real,
+    ) {
+        let turbo = &mut self.config.turbo;
+        turbo.enabled = enabled;
+        turbo.max_boost = max_boost;
+        turbo.spool_rate = spool_rate;
+        turbo.release_rate = release_rate;
+    }
+
+    pub fn set_dynamics(
+        &mut self,
+        brake_bias: Real,
+        abs_strength: Real,
+        traction_control_strength: Real,
+        esc_strength: Real,
+        drag_coefficient: Real,
+        frontal_area: Real,
+        rolling_resistance: Real,
+        downforce_coefficient: Real,
+        base_linear_damping: Real,
+        linear_damping_per_speed: Real,
+        base_angular_damping: Real,
+        angular_damping_per_speed: Real,
+    ) {
+        let dynamics = &mut self.config.dynamics;
+        dynamics.brake_bias = brake_bias;
+        dynamics.abs_strength = abs_strength;
+        dynamics.traction_control_strength = traction_control_strength;
+        dynamics.esc_strength = esc_strength;
+        dynamics.drag_coefficient = drag_coefficient;
+        dynamics.frontal_area = frontal_area;
+        dynamics.rolling_resistance = rolling_resistance;
+        dynamics.downforce_coefficient = downforce_coefficient;
+        dynamics.base_linear_damping = base_linear_damping;
+        dynamics.linear_damping_per_speed = linear_damping_per_speed;
+        dynamics.base_angular_damping = base_angular_damping;
+        dynamics.angular_damping_per_speed = angular_damping_per_speed;
+    }
+
+    pub fn set_steering(
+        &mut self,
+        max_angle: Real,
+        speed_sensitivity: Real,
+        minimum_speed_factor: Real,
+        assist: bool,
+        drift_correction: Real,
+    ) {
+        let steering = &mut self.config.steering;
+        steering.max_angle = max_angle;
+        steering.speed_sensitivity = speed_sensitivity;
+        steering.minimum_speed_factor = minimum_speed_factor;
+        steering.assist = assist;
+        steering.drift_correction = drift_correction;
+    }
+}
 
 #[wasm_bindgen]
 pub struct RawDynamicRayCastVehicleController {
@@ -16,10 +152,96 @@ pub struct RawDynamicRayCastVehicleController {
 #[wasm_bindgen]
 impl RawDynamicRayCastVehicleController {
     #[wasm_bindgen(constructor)]
-    pub fn new(chassis: FlatHandle) -> Self {
+    pub fn new(chassis: FlatHandle, config: RawVehicleControllerConfig) -> Self {
         Self {
-            controller: DynamicRayCastVehicleController::new(utils::body_handle(chassis)),
+            controller: DynamicRayCastVehicleController::new(
+                utils::body_handle(chassis),
+                config.config,
+            ),
         }
+    }
+
+    pub fn set_input(
+        &mut self,
+        throttle: Real,
+        brake: Real,
+        clutch: Real,
+        handbrake: Real,
+        steering: Real,
+    ) {
+        self.controller.set_input(VehicleInput {
+            throttle,
+            brake,
+            clutch,
+            handbrake,
+            steering,
+        });
+    }
+
+    pub fn shift_up(&mut self) {
+        self.controller.shift_up();
+    }
+
+    pub fn shift_down(&mut self) {
+        self.controller.shift_down();
+    }
+
+    pub fn set_gear(&mut self, gear: i32) {
+        self.controller.set_gear(gear);
+    }
+
+    pub fn set_steering_assist(&mut self, enabled: bool) {
+        self.controller.set_steering_assist(enabled);
+    }
+
+    pub fn set_drift_correction(&mut self, correction: Real) {
+        self.controller.set_drift_correction(correction);
+    }
+
+    pub fn engine_rpm(&self) -> Real {
+        self.controller.state().engine_rpm
+    }
+    pub fn current_gear(&self) -> i32 {
+        self.controller.state().current_gear
+    }
+    pub fn reverse_direction(&self) -> bool {
+        self.controller.state().reverse_direction
+    }
+    pub fn vehicle_speed(&self) -> Real {
+        self.controller.state().vehicle_speed
+    }
+    pub fn driven_wheel_speed(&self) -> Real {
+        self.controller.state().driven_wheel_speed
+    }
+    pub fn steering_angle(&self) -> Real {
+        self.controller.state().steering_angle
+    }
+    pub fn engine_load(&self) -> Real {
+        self.controller.state().engine_load
+    }
+    pub fn rev_limiter_amount(&self) -> Real {
+        self.controller.state().rev_limiter_amount
+    }
+    pub fn turbo_load(&self) -> Real {
+        self.controller.state().turbo_load
+    }
+    pub fn turbo_release_sequence(&self) -> u32 {
+        self.controller.state().turbo_release_sequence
+    }
+    pub fn wheels_in_contact(&self) -> usize {
+        self.controller.state().wheels_in_contact
+    }
+    pub fn abs_activity(&self) -> Real {
+        self.controller.state().abs_activity
+    }
+    pub fn traction_control_activity(&self) -> Real {
+        self.controller.state().traction_control_activity
+    }
+    pub fn force_feedback(&self) -> Real {
+        self.controller.state().force_feedback
+    }
+    pub fn steering_friction(&self) -> Real {
+        self.controller.state().steering_friction
     }
 
     pub fn current_vehicle_speed(&self) -> Real {
@@ -58,7 +280,15 @@ impl RawDynamicRayCastVehicleController {
         axle_cs: &RawVector,
         suspension_rest_length: Real,
         radius: Real,
+        axle: u32,
+        driven: bool,
+        steered: bool,
     ) {
+        let axle = if axle == 0 {
+            WheelAxle::Front
+        } else {
+            WheelAxle::Rear
+        };
         self.controller.add_wheel(
             chassis_connection_cs.0.into(),
             direction_cs.0,
@@ -66,6 +296,7 @@ impl RawDynamicRayCastVehicleController {
             suspension_rest_length,
             radius,
             &WheelTuning::default(),
+            WheelRole::new(axle, driven, steered),
         );
     }
 
@@ -322,7 +553,7 @@ impl RawDynamicRayCastVehicleController {
     pub fn wheel_tire_type(&self, i: usize) -> Option<String> {
         self.controller.wheels().get(i).map(|w| w.tire_type.clone())
     }
-    
+
     pub fn set_wheel_tire_type(&mut self, i: usize, tire_type: &str) {
         self.controller.set_wheel_tire_type(i, tire_type)
     }
@@ -332,7 +563,8 @@ impl RawDynamicRayCastVehicleController {
     }
 
     pub fn add_surface_to_tire_type(&mut self, tire_type: &str, surface: &str, friction: f32) {
-        self.controller.add_surface_to_tire_type(tire_type, surface, friction);
+        self.controller
+            .add_surface_to_tire_type(tire_type, surface, friction);
     }
 
     pub fn wheel_side_factor(&self, i: usize) -> Option<Real> {
@@ -372,9 +604,9 @@ impl RawDynamicRayCastVehicleController {
     pub fn set_wheel_contact_damping(&mut self, i: usize, value: Real) {
         if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
             wheel.contact_damping = value;
+            wheel.base_contact_damping = value;
         }
     }
-
 
     /*
      * Getters only.
@@ -384,7 +616,10 @@ impl RawDynamicRayCastVehicleController {
     }
 
     pub fn wheel_is_anti_lock_brake(&self, i: usize) -> Option<bool> {
-        self.controller.wheels().get(i).map(|w| w.is_anti_lock_brake)
+        self.controller
+            .wheels()
+            .get(i)
+            .map(|w| w.is_anti_lock_brake)
     }
 
     pub fn wheel_delta_rotation(&self, i: usize) -> Option<Real> {
@@ -400,15 +635,24 @@ impl RawDynamicRayCastVehicleController {
     }
 
     pub fn wheel_ground_type(&self, i: usize) -> Option<String> {
-        self.controller.wheels().get(i).map(|w| w.ground_type.clone())
+        self.controller
+            .wheels()
+            .get(i)
+            .map(|w| w.ground_type.clone())
     }
 
     pub fn wheel_engine_force_feedback(&self, i: usize) -> Option<Real> {
-        self.controller.wheels().get(i).map(|w| w.engine_force_feedback)
+        self.controller
+            .wheels()
+            .get(i)
+            .map(|w| w.engine_force_feedback)
     }
 
     pub fn wheel_suspension_compression_rate(&self, i: usize) -> Option<Real> {
-        self.controller.wheels().get(i).map(|w| w.suspension_compression_rate)
+        self.controller
+            .wheels()
+            .get(i)
+            .map(|w| w.suspension_compression_rate)
     }
 
     pub fn wheel_forward_impulse(&self, i: usize) -> Option<Real> {
