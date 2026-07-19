@@ -632,7 +632,7 @@ export enum TriMeshFlags {
      * This is achieved by taking into account adjacent triangle normals when computing contact
      * points for a given triangle.
      *
-     * /!\ NOT SUPPORTED IN THE 2D VERSION OF RAPIER.
+     * /!\ NOT SUPPORTED IN THE 2D VERSION OF VECTORG ENGINE.
      */
     FIX_INTERNAL_EDGES = 0b1000_0000 | TriMeshFlags.MERGE_DUPLICATE_VERTICES,
 }

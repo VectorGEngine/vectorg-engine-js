@@ -1,4 +1,4 @@
-use rapier::prelude::FeatureId;
+use engine::prelude::FeatureId;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 #[cfg(feature = "dim2")]

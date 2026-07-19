@@ -2,10 +2,10 @@ use crate::dynamics::{
     RawCCDSolver, RawImpulseJointSet, RawIntegrationParameters, RawIslandManager,
     RawMultibodyJointSet, RawRigidBodySet,
 };
+use crate::engine::pipeline::PhysicsPipeline;
 use crate::geometry::{RawBroadPhase, RawColliderSet, RawNarrowPhase};
 use crate::math::RawVector;
 use crate::pipeline::{RawEventQueue, RawPhysicsHooks};
-use crate::rapier::pipeline::PhysicsPipeline;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

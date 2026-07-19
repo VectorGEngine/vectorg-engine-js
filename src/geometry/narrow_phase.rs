@@ -1,7 +1,7 @@
 use crate::math::RawVector;
 use crate::utils::{self, FlatHandle};
-use rapier::geometry::{ContactManifold, ContactPair, NarrowPhase};
-use rapier::math::Real;
+use engine::geometry::{ContactManifold, ContactPair, NarrowPhase};
+use engine::math::Real;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

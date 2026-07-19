@@ -9,15 +9,15 @@ codegen-units = 1
 strip = true # Workaround for https://github.com/bevyengine/bevy/issues/16030 (the bug only happens in 2D)
 
 [patch.crates-io]
-#rapier2d = { path = "../rapier/crates/rapier2d" }
-rapier3d = { path = "../rapier/crates/rapier3d" }
+#vectorg-engine-2d = { path = "../vectorg-engine/crates/vectorg-engine-2d" }
+vectorg-engine = { path = "../vectorg-engine/crates/vectorg-engine" }
 #parry2d = { path = "../parry/crates/parry2d" }
 #parry3d = { path = "../parry/crates/parry3d" }
 #nalgebra = { path = "../nalgebra" }
 #simba = { path = "../simba" }
 
 #nalgebra = { git = "https://github.com/dimforge/nalgebra", branch = "dev" }
-#rapier2d = { git = "https://github.com/dimforge/rapier", rev = "82416e3ca66dcdc34c0f350cec570ef1019a199f" }
-#rapier3d = { git = "https://github.com/dimforge/rapier", rev = "82416e3ca66dcdc34c0f350cec570ef1019a199f" }
+#vectorg-engine-2d = { git = "https://github.com/VectorGEngine/vectorg-engine" }
+#vectorg-engine = { git = "https://github.com/VectorGEngine/vectorg-engine" }
 #parry2d = { git = "https://github.com/dimforge/parry" }
 #parry3d = { git = "https://github.com/dimforge/parry" }

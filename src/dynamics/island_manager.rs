@@ -1,5 +1,5 @@
 use crate::utils;
-use rapier::dynamics::IslandManager;
+use engine::dynamics::IslandManager;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

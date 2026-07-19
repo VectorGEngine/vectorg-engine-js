@@ -61,9 +61,9 @@ impl BuildValues {
             FeatureSet::Simd => vec!["simd-stable"],
         };
         let js_package_name = match args.feature_set {
-            FeatureSet::NonDeterministic => format!("rapier{dim}d"),
-            FeatureSet::Deterministic => format!("rapier{dim}d-deterministic"),
-            FeatureSet::Simd => format!("rapier{dim}d-simd"),
+            FeatureSet::NonDeterministic => format!("vectorg-engine-{dim}d"),
+            FeatureSet::Deterministic => format!("vectorg-engine-{dim}d-deterministic"),
+            FeatureSet::Simd => format!("vectorg-engine-{dim}d-simd"),
         };
 
         let root: PathBuf = env!("CARGO_MANIFEST_DIR").into();

@@ -2,7 +2,7 @@ use crate::geometry::feature::IntoTypeValue;
 use crate::geometry::RawFeatureType;
 use crate::math::RawVector;
 use crate::utils::{self, FlatHandle};
-use rapier::{
+use engine::{
     geometry::{ColliderHandle, PointProjection},
     prelude::FeatureId,
 };

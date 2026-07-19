@@ -30,7 +30,13 @@ else
     feature_postfix="-${feature}"
 fi
 
-rust_source_directory="../builds/rapier${dimension}d${feature_postfix}"
+if [[ $dimension == "2" ]]; then
+    package_name="vectorg-engine-2d${feature_postfix}"
+else
+    package_name="vectorg-engine-3d${feature_postfix}"
+fi
+
+rust_source_directory="../builds/${package_name}"
 
 if [ ! -d "$rust_source_directory" ]; then
     echo "Directory $rust_source_directory does not exist";
@@ -47,4 +53,4 @@ else
     export additional_rustflags=''
 fi
 
-RUSTFLAGS="${additional_rustflags}" wasm-pack --verbose build --target web --out-dir "../../rapier-compat/builds/${dimension}d${feature_postfix}/wasm-build" "$rust_source_directory"
+RUSTFLAGS="${additional_rustflags}" wasm-pack --verbose build --target web --out-dir "../../vectorg-engine-compat/builds/${dimension}d${feature_postfix}/wasm-build" "$rust_source_directory"

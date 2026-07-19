@@ -1,6 +1,6 @@
-use rapier::data::Index;
-use rapier::dynamics::{ImpulseJointHandle, MultibodyJointHandle, RigidBodyHandle};
-use rapier::geometry::{Collider, ColliderHandle};
+use engine::data::Index;
+use engine::dynamics::{ImpulseJointHandle, MultibodyJointHandle, RigidBodyHandle};
+use engine::geometry::{Collider, ColliderHandle};
 use wasm_bindgen::JsValue;
 
 pub type FlatHandle = f64;

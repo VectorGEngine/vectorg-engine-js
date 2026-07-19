@@ -1,14 +1,14 @@
 use crate::dynamics::{RawImpulseJointSet, RawMultibodyJointSet, RawRigidBodySet};
 use crate::geometry::{RawColliderSet, RawNarrowPhase};
+use engine::dynamics::{RigidBody, RigidBodySet};
+use engine::geometry::ColliderSet;
+use engine::math::{Point, Real};
+use engine::pipeline::{DebugRenderBackend, DebugRenderObject, DebugRenderPipeline};
+use engine::prelude::{QueryFilter, QueryFilterFlags};
 use js_sys::Float32Array;
 use palette::convert::IntoColorUnclamped;
 use palette::rgb::Rgba;
 use palette::Hsla;
-use rapier::dynamics::{RigidBody, RigidBodySet};
-use rapier::geometry::ColliderSet;
-use rapier::math::{Point, Real};
-use rapier::pipeline::{DebugRenderBackend, DebugRenderObject, DebugRenderPipeline};
-use rapier::prelude::{QueryFilter, QueryFilterFlags};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

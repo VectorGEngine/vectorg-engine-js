@@ -21,9 +21,9 @@ mod ray;
 mod shape;
 mod toi;
 
-use rapier::dynamics::CoefficientCombineRule;
-use rapier::geometry::InteractionGroups;
-use rapier::prelude::Group;
+use engine::dynamics::CoefficientCombineRule;
+use engine::geometry::InteractionGroups;
+use engine::prelude::Group;
 
 pub const fn unpack_interaction_groups(memberships_filter: u32) -> InteractionGroups {
     InteractionGroups::new(

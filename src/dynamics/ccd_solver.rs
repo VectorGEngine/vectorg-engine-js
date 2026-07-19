@@ -1,4 +1,4 @@
-use rapier::dynamics::CCDSolver;
+use engine::dynamics::CCDSolver;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

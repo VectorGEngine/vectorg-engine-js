@@ -9,5 +9,5 @@
         "declaration": true,
         "rootDirs": ["./pkg", "./pkg/src"]
     },
-    "files": ["./pkg/src/rapier.ts"]
+    "files": ["./pkg/src/vectorg-engine.ts"]
 }

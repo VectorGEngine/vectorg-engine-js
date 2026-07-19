@@ -1,16 +1,16 @@
 {
     "author": "sebcrozet <developer@crozet.re>",
-    "name": "rapier-testbed2d",
+    "name": "vectorg-engine-testbed-2d",
     "version": "0.1.0",
-    "description": "JavaScript testbed for rapier.",
+    "description": "VectorG Engine JS 2D testbed.",
     "license": "Apache-2.0",
-    "main": "dist/rapier-testbed2d.js",
+    "main": "dist/vectorg-engine-testbed-2d.js",
     "scripts": {
         "build": "rimraf dist pkg && webpack",
         "start": "rimraf dist pkg && webpack serve --open --node-env development"
     },
     "dependencies": {
-        "@dimforge/rapier2d": "file:../builds/rapier2d",
+        "@vectorg/vectorg-engine-2d": "file:../builds/vectorg-engine-2d",
         "hash-wasm": "^4.12.0",
         "lil-gui": "^0.17.0",
         "pixi-viewport": "^4.37.0",

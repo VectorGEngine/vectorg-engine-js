@@ -1,5 +1,5 @@
-rapier2d/compat
-rapier3d/compat
+engine-2d/compat
+engine/compat
 **/*.rs.bk
 node_modules
 target
@@ -18,4 +18,4 @@ builds/*
 !builds/prepare_builds
 
 # compat generated builds
-rapier-compat/builds/
+vectorg-engine-compat/builds/

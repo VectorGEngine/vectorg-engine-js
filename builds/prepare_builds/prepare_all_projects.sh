@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# features=(non-deterministic deterministic simd)
+# dims=(dim2 dim3)
+
 features=(non-deterministic)
 dims=(dim3)
 

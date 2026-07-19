@@ -1,16 +1,16 @@
 {
     "author": "sebcrozet <developer@crozet.re>",
-    "name": "rapier-testbed3d",
+    "name": "vectorg-engine-testbed-3d",
     "version": "0.1.0",
-    "description": "JavaScript testbed for rapier.",
+    "description": "VectorG Engine JS 3D testbed.",
     "license": "Apache-2.0",
-    "main": "dist/rapier-testbed3d.js",
+    "main": "dist/vectorg-engine-testbed-3d.js",
     "scripts": {
         "build": "rimraf dist pkg && webpack",
         "start": "rimraf dist pkg && webpack serve --open --node-env development"
     },
     "dependencies": {
-        "@dimforge/rapier3d": "file:../builds/rapier3d",
+        "@vectorg/vectorg-engine-3d": "file:../builds/vectorg-engine-3d",
         "hash-wasm": "^4.12.0",
         "lil-gui": "^0.17.0",
         "seedrandom": "^3.0.5",

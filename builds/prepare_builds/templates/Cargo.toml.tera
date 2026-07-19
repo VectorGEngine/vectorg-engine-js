@@ -1,11 +1,11 @@
 [package]
-name = "dimforge_{{ js_package_name }}" # Can't be named rapier{{ dimension }}d which conflicts with the dependency.
+name = "vectorg_{{ js_package_name }}"
 version = "0.17.3"
 authors = ["Sébastien Crozet <developer@crozet.re>"]
-description = "{{ dimension }}-dimensional physics engine in Rust - official JS bindings."
-documentation = "https://rapier.rs/rustdoc/rapier{{ dimension }}d/index.html"
-homepage = "https://rapier.rs"
-repository = "https://github.com/dimforge/rapier.js"
+description = "JavaScript and WebAssembly bindings for VectorG Engine."
+documentation = "https://github.com/VectorGEngine/vectorg-engine-js"
+homepage = "https://github.com/VectorGEngine/vectorg-engine-js"
+repository = "https://github.com/VectorGEngine/vectorg-engine-js"
 readme = "README.md"
 keywords = ["physics", "dynamics", "rigid", "real-time", "joints"]
 license = "Apache-2.0"
@@ -16,7 +16,7 @@ default = ["dim{{ dimension }}"]
 dim{{ dimension }} = []
 
 [lib]
-name = "rapier_wasm{{ dimension }}d"
+name = "vectorg_engine_wasm{{ dimension }}d"
 path = "../../src/lib.rs"
 crate-type = ["cdylib", "rlib"]
 required-features = ["dim{{ dimension }}"]
@@ -27,7 +27,7 @@ rust.unexpected_cfgs = { level = "warn", check-cfg = [
 ] }
 
 [dependencies]
-rapier{{ dimension }}d = { version = "0.26.1", features = [
+engine = { package = "vectorg-engine{% if dimension == "2" %}-2d{% endif %}", version = "0.26.1", path = "../../../vectorg-engine/crates/vectorg-engine{% if dimension == "2" %}-2d{% endif %}", features = [
     "serde-serialize",
     "debug-render",
     {%- for feature in additional_features %}
@@ -35,12 +35,17 @@ rapier{{ dimension }}d = { version = "0.26.1", features = [
     {%- endfor %}
 ] }
 ref-cast = "1"
-wasm-bindgen = "0.2.100"
-js-sys = "0.3"
+# Keep the generated declarations compatible with the existing TypeScript 4.8
+# pipeline. wasm-bindgen 0.2.126 added Symbol.dispose declarations.
+wasm-bindgen = "=0.2.100"
+js-sys = "=0.3.77"
 nalgebra = "0.33"
 serde = { version = "1", features = ["derive", "rc"] }
 bincode = "1"
 palette = "0.7"
+# Keep fresh deterministic builds compatible with Cargo 1.82. Newer indexmap
+# releases use an Edition 2024 manifest that Cargo 1.82 cannot parse.
+indexmap = "=2.9.0"
 
 [package.metadata.wasm-pack.profile.release]
 # add -g to keep debug symbols

@@ -1,7 +1,7 @@
-import type RAPIER from "@dimforge/rapier3d";
+import type RAPIER from "@vectorg/vectorg-engine-3d";
 import type {Testbed} from "../Testbed";
 
-type RAPIER_API = typeof import("@dimforge/rapier3d");
+type RAPIER_API = typeof import("@vectorg/vectorg-engine-3d");
 
 function createPrismaticJoints(
     RAPIER: RAPIER_API,

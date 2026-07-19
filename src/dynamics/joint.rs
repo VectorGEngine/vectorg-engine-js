@@ -1,12 +1,12 @@
 use crate::math::{RawRotation, RawVector};
-use na::Unit;
-use rapier::dynamics::{
+use engine::dynamics::{
     FixedJointBuilder, GenericJoint, JointAxesMask, JointAxis, MotorModel, PrismaticJointBuilder,
     RevoluteJointBuilder, RopeJointBuilder, SpringJointBuilder,
 };
 #[cfg(feature = "dim3")]
-use rapier::dynamics::{GenericJointBuilder, SphericalJointBuilder};
-use rapier::math::Isometry;
+use engine::dynamics::{GenericJointBuilder, SphericalJointBuilder};
+use engine::math::Isometry;
+use na::Unit;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

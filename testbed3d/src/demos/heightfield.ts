@@ -1,7 +1,7 @@
 import seedrandom from "seedrandom";
 import type {Testbed} from "../Testbed";
 
-type RAPIER_API = typeof import("@dimforge/rapier3d");
+type RAPIER_API = typeof import("@vectorg/vectorg-engine-3d");
 
 function generateHeightfield(nsubdivs: number) {
     let heights = [];

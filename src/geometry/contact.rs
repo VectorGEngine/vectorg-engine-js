@@ -1,5 +1,5 @@
 use crate::math::RawVector;
-use rapier::parry::query;
+use engine::parry::query;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

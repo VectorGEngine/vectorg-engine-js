@@ -1,7 +1,7 @@
 import type {Testbed} from "../Testbed";
 import seedrandom from "seedrandom";
 
-type RAPIER_API = typeof import("@dimforge/rapier3d");
+type RAPIER_API = typeof import("@vectorg/vectorg-engine-3d");
 
 function generateTriMesh(nsubdivs: number, wx: number, wy: number, wz: number) {
     let vertices = [];

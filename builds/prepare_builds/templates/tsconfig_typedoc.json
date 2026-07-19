@@ -6,5 +6,5 @@
         "declaration": true,
         "lib": ["es6"]
     },
-    "files": ["./pkg/rapier.d.ts"]
+    "files": ["./pkg/vectorg-engine.d.ts"]
 }

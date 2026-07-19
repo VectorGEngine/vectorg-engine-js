@@ -1,8 +1,8 @@
 import * as PIXI from "pixi.js";
 import {Viewport} from "pixi-viewport";
-import type * as RAPIER from "@dimforge/rapier2d";
+import type * as RAPIER from "@vectorg/vectorg-engine-2d";
 
-type RAPIER_API = typeof import("@dimforge/rapier2d");
+type RAPIER_API = typeof import("@vectorg/vectorg-engine-2d");
 
 const BOX_INSTANCE_INDEX = 0;
 const BALL_INSTANCE_INDEX = 1;

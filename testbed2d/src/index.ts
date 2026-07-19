@@ -11,7 +11,7 @@ import * as CharacterController from "./demos/characterController";
 import * as PidController from "./demos/pidController";
 import * as Voxels from "./demos/voxels";
 
-import("@dimforge/rapier2d").then((RAPIER) => {
+import("@vectorg/vectorg-engine-2d").then((RAPIER) => {
     let builders = new Map([
         ["collision groups", CollisionGroups.initWorld],
         ["character controller", CharacterController.initWorld],

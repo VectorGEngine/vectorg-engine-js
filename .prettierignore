@@ -3,5 +3,8 @@ gen2d
 gen3d
 docs
 target
+builds/*
+!builds/prepare_builds
+vectorg-engine-compat/builds
 **/CHANGELOG.md
 **/README.md

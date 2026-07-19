@@ -4,12 +4,12 @@ use crate::dynamics::{
 };
 use crate::geometry::{RawBroadPhase, RawColliderSet, RawNarrowPhase};
 use crate::math::RawVector;
-use js_sys::Uint8Array;
-use rapier::dynamics::{
+use engine::dynamics::{
     ImpulseJointSet, IntegrationParameters, IslandManager, MultibodyJointSet, RigidBodySet,
 };
-use rapier::geometry::{ColliderSet, DefaultBroadPhase, NarrowPhase};
-use rapier::math::Vector;
+use engine::geometry::{ColliderSet, DefaultBroadPhase, NarrowPhase};
+use engine::math::Vector;
+use js_sys::Uint8Array;
 use wasm_bindgen::prelude::*;
 
 #[derive(Serialize)]

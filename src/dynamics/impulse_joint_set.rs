@@ -1,6 +1,6 @@
 use crate::dynamics::RawGenericJoint;
 use crate::utils::{self, FlatHandle};
-use rapier::dynamics::{ImpulseJoint, ImpulseJointSet};
+use engine::dynamics::{ImpulseJoint, ImpulseJointSet};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

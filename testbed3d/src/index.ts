@@ -17,7 +17,7 @@ import * as PidController from "./demos/pidController";
 import * as glbToTrimesh from "./demos/glbToTrimesh";
 import * as glbToConvexHull from "./demos/glbtoConvexHull";
 
-import("@dimforge/rapier3d").then((RAPIER) => {
+import("@vectorg/vectorg-engine-3d").then((RAPIER) => {
     let builders = new Map([
         ["collision groups", CollisionGroups.initWorld],
         ["character controller", CharacterController.initWorld],

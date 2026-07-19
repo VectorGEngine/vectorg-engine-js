@@ -1,4 +1,4 @@
-# Copy source and remove #if sections - similar to script in ../rapierXd
+# Copy source and remove dimension-specific sections.
 set -e
 
 gen_js() {
@@ -42,7 +42,7 @@ do
 
   mkdir -p ./builds/${feature}/pkg/
 
-  cp ./builds/${feature}/wasm-build/rapier_wasm* ./builds/${feature}/pkg/
+  cp ./builds/${feature}/wasm-build/vectorg_engine_wasm* ./builds/${feature}/pkg/
   cp -r ./gen${dimension}d ./builds/${feature}/
 
   # copy tsconfig, as they contain paths
@@ -50,7 +50,7 @@ do
   cp ./tsconfig.pkg${dimension}d.json ./builds/${feature}/tsconfig.pkg.json
 
   # "import.meta" causes Babel to choke, but the code path is never taken so just remove it.
-  sed -i.bak 's/import.meta.url/"<deleted>"/g' ./builds/${feature}/pkg/rapier_wasm${dimension}d.js
+  sed -i.bak 's/import.meta.url/"<deleted>"/g' ./builds/${feature}/pkg/vectorg_engine_wasm${dimension}d.js
 
   # Clean up backup files.
   find ./builds/${feature}/pkg/ -type f -name '*.bak' | xargs rm

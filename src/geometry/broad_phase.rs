@@ -1,4 +1,4 @@
-use rapier::geometry::DefaultBroadPhase;
+use engine::geometry::DefaultBroadPhase;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

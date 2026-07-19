@@ -1,6 +1,6 @@
 import type {Testbed} from "../Testbed";
 
-type RAPIER_API = typeof import("@dimforge/rapier3d");
+type RAPIER_API = typeof import("@vectorg/vectorg-engine-3d");
 
 export function initWorld(RAPIER: RAPIER_API, testbed: Testbed) {
     let gravity = new RAPIER.Vector3(0.0, -9.81, 0.0);

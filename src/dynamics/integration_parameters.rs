@@ -1,4 +1,4 @@
-use rapier::dynamics::IntegrationParameters;
+use engine::dynamics::IntegrationParameters;
 use std::num::NonZeroUsize;
 use wasm_bindgen::prelude::*;
 

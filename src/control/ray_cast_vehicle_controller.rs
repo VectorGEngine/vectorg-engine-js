@@ -3,12 +3,12 @@ use crate::geometry::RawColliderSet;
 use crate::math::RawVector;
 use crate::pipeline::RawQueryPipeline;
 use crate::utils::{self, FlatHandle};
-use rapier::control::{
+use engine::control::{
     DynamicRayCastVehicleController, VehicleControllerConfig, VehicleInput, WheelAxle, WheelRole,
     WheelTuning,
 };
-use rapier::math::Real;
-use rapier::pipeline::{QueryFilter, QueryFilterFlags};
+use engine::math::Real;
+use engine::pipeline::{QueryFilter, QueryFilterFlags};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
-import RAPIER from "@dimforge/rapier3d";
+import RAPIER from "@vectorg/vectorg-engine-3d";
 
 const BOX_INSTANCE_INDEX = 0;
 const BALL_INSTANCE_INDEX = 1;
@@ -18,7 +18,7 @@ interface InstanceDesc {
     scale?: THREE.Vector3;
 }
 
-type RAPIER_API = typeof import("@dimforge/rapier3d");
+type RAPIER_API = typeof import("@vectorg/vectorg-engine-3d");
 
 // NOTE: this is a very naive voxels -> mesh conversion. Proper
 //       conversions should use something like greedy meshing instead.

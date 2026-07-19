@@ -5,11 +5,11 @@ use crate::geometry::{
 };
 use crate::math::{RawRotation, RawVector};
 use crate::utils::{self, FlatHandle};
-use rapier::geometry::{Aabb, ColliderHandle, Ray};
-use rapier::math::{Isometry, Point};
-use rapier::parry::query::ShapeCastOptions;
-use rapier::pipeline::{QueryFilter, QueryFilterFlags, QueryPipeline};
-use rapier::prelude::FeatureId;
+use engine::geometry::{Aabb, ColliderHandle, Ray};
+use engine::math::{Isometry, Point};
+use engine::parry::query::ShapeCastOptions;
+use engine::pipeline::{QueryFilter, QueryFilterFlags, QueryPipeline};
+use engine::prelude::FeatureId;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

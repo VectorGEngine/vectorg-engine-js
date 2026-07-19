@@ -1,0 +1,9 @@
+VectorG Engine JS
+
+VectorG Engine JS is derived from Rapier.js and Rapier, originally developed
+by Dimforge EURL. It continues to include the original Apache License 2.0,
+copyright notices, and attribution. See LICENSE for the complete license terms.
+
+Upstream projects:
+https://github.com/dimforge/rapier.js
+https://github.com/dimforge/rapier

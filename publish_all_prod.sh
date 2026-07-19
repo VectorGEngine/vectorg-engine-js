@@ -9,7 +9,7 @@ do
     )
 done;
 
-for entry in rapier-compat/builds/*/pkg
+for entry in vectorg-engine-compat/builds/*/pkg
 do
     (
         echo "Publishing $entry"

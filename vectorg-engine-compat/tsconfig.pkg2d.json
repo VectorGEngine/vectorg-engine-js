@@ -4,5 +4,5 @@
         "rootDir": "./gen2d",
         "outDir": "./2d"
     },
-    "files": ["./gen2d/rapier.ts"]
+    "files": ["./gen2d/vectorg-engine.ts"]
 }

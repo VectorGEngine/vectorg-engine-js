@@ -1,6 +1,6 @@
 use crate::math::RawVector;
 use crate::utils::{self, FlatHandle};
-use rapier::geometry::{ColliderHandle, ShapeCastHit};
+use engine::geometry::{ColliderHandle, ShapeCastHit};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

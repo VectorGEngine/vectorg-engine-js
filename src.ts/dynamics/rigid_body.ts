@@ -442,7 +442,7 @@ export class RigidBody {
      * If this rigid body is kinematic, sets its future translation after the next timestep integration.
      *
      * This should be used instead of `rigidBody.setTranslation` to make the dynamic object
-     * interacting with this kinematic body behave as expected. Internally, Rapier will compute
+     * interacting with this kinematic body behave as expected. Internally, VectorG Engine will compute
      * an artificial velocity for this rigid-body from its current position and its next kinematic
      * position. This velocity will be used to compute forces on dynamic bodies interacting with
      * this body.
@@ -463,7 +463,7 @@ export class RigidBody {
      * If this rigid body is kinematic, sets its future rotation after the next timestep integration.
      *
      * This should be used instead of `rigidBody.setRotation` to make the dynamic object
-     * interacting with this kinematic body behave as expected. Internally, Rapier will compute
+     * interacting with this kinematic body behave as expected. Internally, VectorG Engine will compute
      * an artificial velocity for this rigid-body from its current position and its next kinematic
      * position. This velocity will be used to compute forces on dynamic bodies interacting with
      * this body.
@@ -487,7 +487,7 @@ export class RigidBody {
      * If this rigid body is kinematic, sets its future rotation after the next timestep integration.
      *
      * This should be used instead of `rigidBody.setRotation` to make the dynamic object
-     * interacting with this kinematic body behave as expected. Internally, Rapier will compute
+     * interacting with this kinematic body behave as expected. Internally, VectorG Engine will compute
      * an artificial velocity for this rigid-body from its current position and its next kinematic
      * position. This velocity will be used to compute forces on dynamic bodies interacting with
      * this body.
@@ -1111,7 +1111,7 @@ export class RigidBody {
 
     public setUserData(data: unknown) {
         this.userData = data;
-        if (typeof data === 'number') {
+        if (typeof data === "number") {
             this.rawSet.rbSetUserData(this.handle, data as number);
         }
     }

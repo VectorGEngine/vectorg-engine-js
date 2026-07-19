@@ -1,14 +1,14 @@
 use crate::geometry::{RawPointProjection, RawRayIntersection, RawShapeCastHit, RawShapeContact};
 use crate::math::{RawRotation, RawVector};
+use engine::geometry::{Shape, SharedShape, TriMeshFlags};
+use engine::math::{Isometry, Point, Real, Vector, DIM};
+use engine::parry::query;
+use engine::parry::query::{Ray, ShapeCastOptions};
 #[cfg(feature = "dim3")]
 use na::DMatrix;
 #[cfg(feature = "dim2")]
 use na::DVector;
 use na::Unit;
-use rapier::geometry::{Shape, SharedShape, TriMeshFlags};
-use rapier::math::{Isometry, Point, Real, Vector, DIM};
-use rapier::parry::query;
-use rapier::parry::query::{Ray, ShapeCastOptions};
 use wasm_bindgen::prelude::*;
 
 pub trait SharedShapeUtility {
@@ -334,7 +334,7 @@ impl RawShape {
         flags: u32,
     ) -> Self {
         let flags =
-            rapier::parry::shape::HeightFieldFlags::from_bits(flags as u8).unwrap_or_default();
+            engine::parry::shape::HeightFieldFlags::from_bits(flags as u8).unwrap_or_default();
         let heights = DMatrix::from_vec(nrows as usize + 1, ncols as usize + 1, heights);
         Self(SharedShape::heightfield_with_flags(heights, scale.0, flags))
     }

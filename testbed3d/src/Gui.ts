@@ -35,7 +35,7 @@ export class Gui {
 
         // For configuring simulation parameters.
         this.gui = new GUI({
-            title: "Rapier JS demos",
+            title: "VectorG Engine JS demos",
         });
         var currDemo = this.gui
             .add(simulationParameters, "demo", demos)

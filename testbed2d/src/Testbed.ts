@@ -2,9 +2,9 @@ import {Graphics} from "./Graphics";
 import {Gui} from "./Gui";
 import type {DebugInfos} from "./Gui";
 import {xxhash128} from "hash-wasm";
-import type * as RAPIER from "@dimforge/rapier2d";
+import type * as RAPIER from "@vectorg/vectorg-engine-2d";
 
-type RAPIER_API = typeof import("@dimforge/rapier2d");
+type RAPIER_API = typeof import("@vectorg/vectorg-engine-2d");
 
 type Builders = Map<string, (RAPIER: RAPIER_API, testbed: Testbed) => void>;
 
@@ -25,8 +25,8 @@ class SimulationParameters {
     debugInfos: boolean;
 
     constructor(backends: Array<string>, builders: Builders) {
-        this.backend = "rapier";
-        this.prevBackend = "rapier";
+        this.backend = "vectorg-engine";
+        this.prevBackend = "vectorg-engine";
         this.demo = "collision groups";
         this.numSolverIters = 4;
         this.running = true;
@@ -60,7 +60,7 @@ export class Testbed {
     snapStepId: number;
 
     constructor(RAPIER: RAPIER_API, builders: Builders) {
-        let backends = ["rapier"];
+        let backends = ["vectorg-engine"];
         this.RAPIER = RAPIER;
         let parameters = new SimulationParameters(backends, builders);
         this.gui = new Gui(this, parameters);

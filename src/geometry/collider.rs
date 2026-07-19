@@ -5,12 +5,12 @@ use crate::geometry::{
 };
 use crate::math::{RawRotation, RawVector};
 use crate::utils::{self, FlatHandle};
-use rapier::dynamics::MassProperties;
-use rapier::geometry::{ActiveCollisionTypes, ShapeType};
-use rapier::math::{Isometry, Point, Real, Vector};
-use rapier::parry::query;
-use rapier::parry::query::ShapeCastOptions;
-use rapier::pipeline::{ActiveEvents, ActiveHooks};
+use engine::dynamics::MassProperties;
+use engine::geometry::{ActiveCollisionTypes, ShapeType};
+use engine::math::{Isometry, Point, Real, Vector};
+use engine::parry::query;
+use engine::parry::query::ShapeCastOptions;
+use engine::pipeline::{ActiveEvents, ActiveHooks};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

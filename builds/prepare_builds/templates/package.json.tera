@@ -1,9 +1,9 @@
 {
-    "name": "@dimforge/{{ js_package_name }}",
-    "description": "",
+    "name": "@vectorg/{{ js_package_name }}",
+    "description": "JavaScript and WebAssembly bindings for VectorG Engine.",
     "private": true,
     "exports": "./pkg",
-    "types": "./pkg/rapier.d.ts",
+    "types": "./pkg/vectorg-engine.d.ts",
     "scripts": {
         "build": "npm run clean && npm run build:wasm && npm run build:ts && npm run build:doc",
         "build:doc": "typedoc --tsconfig tsconfig_typedoc.json",

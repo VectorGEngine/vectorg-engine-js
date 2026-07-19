@@ -1,6 +1,6 @@
 use crate::utils;
-use rapier::geometry::SolverFlags;
-use rapier::pipeline::{ContactModificationContext, PairFilterContext, PhysicsHooks};
+use engine::geometry::SolverFlags;
+use engine::pipeline::{ContactModificationContext, PairFilterContext, PhysicsHooks};
 use wasm_bindgen::prelude::*;
 
 pub struct RawPhysicsHooks {

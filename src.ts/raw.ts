@@ -1,1 +1,1 @@
-export * from "../rapier3d/pkg/rapier_wasm3d";
+export * from "../engine/pkg/vectorg_engine_wasm3d";

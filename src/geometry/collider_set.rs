@@ -2,7 +2,7 @@ use crate::dynamics::{RawIslandManager, RawRigidBodySet};
 use crate::geometry::RawShape;
 use crate::math::{RawRotation, RawVector};
 use crate::utils::{self, FlatHandle};
-use rapier::prelude::*;
+use engine::prelude::*;
 use wasm_bindgen::prelude::*;
 
 // NOTE: this MUST match the same enum on the TS side.

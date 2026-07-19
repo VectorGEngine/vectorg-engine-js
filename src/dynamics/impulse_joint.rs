@@ -1,7 +1,7 @@
 use crate::dynamics::{RawImpulseJointSet, RawJointAxis, RawJointType, RawMotorModel};
 use crate::math::{RawRotation, RawVector};
 use crate::utils::{self, FlatHandle};
-use rapier::dynamics::JointAxis;
+use engine::dynamics::JointAxis;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

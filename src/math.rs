@@ -1,14 +1,14 @@
 //! Linear algebra primitives.
 
 #[cfg(feature = "dim3")]
+use engine::math::Real;
+use engine::math::{Point, Rotation, Vector};
+#[cfg(feature = "dim3")]
+use engine::parry::utils::SdpMatrix3;
+#[cfg(feature = "dim3")]
 use js_sys::Float32Array;
 #[cfg(feature = "dim3")]
 use na::{Quaternion, Unit};
-#[cfg(feature = "dim3")]
-use rapier::math::Real;
-use rapier::math::{Point, Rotation, Vector};
-#[cfg(feature = "dim3")]
-use rapier::parry::utils::SdpMatrix3;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -25,7 +25,7 @@ impl From<Rotation<f32>> for RawRotation {
 
 #[wasm_bindgen]
 #[cfg(feature = "dim2")]
-/// A unit complex number describing the orientation of a Rapier entity.
+/// A unit complex number describing the orientation of a VectorG Engine entity.
 impl RawRotation {
     /// The identity rotation.
     pub fn identity() -> Self {
@@ -58,7 +58,7 @@ impl RawRotation {
 
 #[wasm_bindgen]
 #[cfg(feature = "dim3")]
-/// A unit quaternion describing the orientation of a Rapier entity.
+/// A unit quaternion describing the orientation of a VectorG Engine entity.
 impl RawRotation {
     #[wasm_bindgen(constructor)]
     pub fn new(x: f32, y: f32, z: f32, w: f32) -> Self {

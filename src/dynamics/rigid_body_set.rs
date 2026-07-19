@@ -2,7 +2,7 @@ use crate::dynamics::{RawImpulseJointSet, RawIslandManager, RawMultibodyJointSet
 use crate::geometry::RawColliderSet;
 use crate::math::{RawRotation, RawVector};
 use crate::utils::{self, FlatHandle};
-use rapier::dynamics::{MassProperties, RigidBody, RigidBodyBuilder, RigidBodySet, RigidBodyType};
+use engine::dynamics::{MassProperties, RigidBody, RigidBodyBuilder, RigidBodySet, RigidBodyType};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

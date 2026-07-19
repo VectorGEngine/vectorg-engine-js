@@ -3,15 +3,15 @@ use crate::geometry::RawColliderSet;
 use crate::math::RawVector;
 use crate::pipeline::RawQueryPipeline;
 use crate::utils::{self, FlatHandle};
-use na::{Isometry, Unit};
-use rapier::control::{
+use engine::control::{
     CharacterAutostep, CharacterCollision, CharacterLength, EffectiveCharacterMovement,
     KinematicCharacterController,
 };
-use rapier::geometry::{ColliderHandle, ShapeCastHit};
-use rapier::math::{Point, Real, Vector};
-use rapier::parry::query::ShapeCastStatus;
-use rapier::pipeline::{QueryFilter, QueryFilterFlags};
+use engine::geometry::{ColliderHandle, ShapeCastHit};
+use engine::math::{Point, Real, Vector};
+use engine::parry::query::ShapeCastStatus;
+use engine::pipeline::{QueryFilter, QueryFilterFlags};
+use na::{Isometry, Unit};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]

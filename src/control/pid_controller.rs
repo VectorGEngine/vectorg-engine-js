@@ -1,15 +1,15 @@
 use crate::dynamics::RawRigidBodySet;
 use crate::math::RawVector;
 use crate::utils::{self, FlatHandle};
-use rapier::control::PidController;
-use rapier::dynamics::AxesMask;
-use rapier::math::Vector;
+use engine::control::PidController;
+use engine::dynamics::AxesMask;
+use engine::math::Vector;
 use wasm_bindgen::prelude::*;
 
 #[cfg(feature = "dim3")]
 use crate::math::RawRotation;
 #[cfg(feature = "dim2")]
-use rapier::math::Rotation;
+use engine::math::Rotation;
 
 #[wasm_bindgen]
 pub struct RawPidController {

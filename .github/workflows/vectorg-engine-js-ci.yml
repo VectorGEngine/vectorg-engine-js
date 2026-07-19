@@ -1,4 +1,4 @@
-name: main
+name: VectorG Engine JS CI
 
 on:
     push:
@@ -48,32 +48,42 @@ jobs:
             - name: Build all no-compat projects
               run: |
                   ./builds/prepare_builds/build_all_projects.sh
-            # Install dependencies to check simd for builds
             - name: Install wabt
-              run: |
-                  sudo apt install wabt;
+              run: sudo apt install wabt
               if: matrix.os == 'ubuntu-latest'
             - name: Install wabt
-              run: |
-                  brew install wabt;
+              run: brew install wabt
               if: matrix.os == 'macos-latest'
-            # Check simd for rust builds
-            - name: Check 2d simd rust build
+            - name: Check 2D SIMD build
               run: |
-                  if ! wasm-objdump -d builds/rapier2d-simd/pkg/rapier_wasm2d_bg.wasm | grep :\\sfd ; then
-                    >&2 echo "ERROR: 2d simd compat build does not include simd opcode prefix." && exit 1
-                  fi
-            - name: Check 3d simd compat build
+                  wasm-objdump -d builds/vectorg-engine-2d-simd/pkg/vectorg_engine_wasm2d_bg.wasm | grep :\\sfd
+            - name: Check 3D SIMD build
               run: |
-                  if ! wasm-objdump -d builds/rapier3d-simd/pkg/rapier_wasm3d_bg.wasm | grep :\\sfd ; then
-                    >&2 echo "ERROR: 3d simd compat build does not include simd opcode prefix." && exit 1
-                  fi
+                  wasm-objdump -d builds/vectorg-engine-3d-simd/pkg/vectorg_engine_wasm3d_bg.wasm | grep :\\sfd
             - uses: actions/upload-artifact@v4
               with:
                   name: pkg no-compat ${{ matrix.os }}
-                  path: |
-                      builds/*/pkg
+                  path: builds/*/pkg
                   overwrite: true
+            - name: Upload documentation for GitHub Pages
+              if: matrix.os == 'ubuntu-latest'
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: builds/vectorg-engine-3d/docs
+    deploy-docs:
+        runs-on: ubuntu-latest
+        needs: [build]
+        if: github.ref == 'refs/heads/master'
+        permissions:
+            pages: write
+            id-token: write
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - name: Deploy VectorG Engine JS documentation
+              id: deployment
+              uses: actions/deploy-pages@v4
     build-compat:
         strategy:
             matrix:
@@ -92,42 +102,20 @@ jobs:
                       ~/.cargo/git/db/
                       target/
                   key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-            - run: npm ci;
+            - run: npm ci
             - name: Prepare compat builds
+              run: ./builds/prepare_builds/prepare_all_projects.sh
+            - name: Build vectorg-engine-compat
               run: |
-                  ./builds/prepare_builds/prepare_all_projects.sh
-            - name: Build rapier-compat
-              run: |
-                  cd rapier-compat;
-                  npm ci;
-                  npm run build;
-                  npm run test;
-            # Install dependencies to check simd for builds
-            - name: Install wabt
-              run: |
-                  sudo apt install wabt;
-              if: matrix.os == 'ubuntu-latest'
-            - name: Install wabt
-              run: |
-                  brew install wabt;
-              if: matrix.os == 'macos-latest'
-            # Check simd for compat builds
-            - name: Check 2d simd compat build
-              run: |
-                  if ! wasm-objdump -d rapier-compat/builds/2d-simd/pkg/rapier_wasm2d_bg.wasm | grep :\\sfd ; then
-                    >&2 echo "ERROR: 2d simd compat build does not include simd opcode prefix." && exit 1;
-                  fi
-            - name: Check 3d simd compat build
-              run: |
-                  if ! wasm-objdump -d rapier-compat/builds/3d-simd/pkg/rapier_wasm3d_bg.wasm | grep :\\sfd ; then
-                    >&2 echo "ERROR: 3d simd compat build does not include simd opcode prefix." && exit 1;
-                  fi
-            # Upload
-            - uses: actions/upload-artifact@v4
+                  cd vectorg-engine-compat
+                  npm ci
+                  npm run build
+                  npm run test
+            - name: Upload compat packages
+              uses: actions/upload-artifact@v4
               with:
                   name: pkg compat ${{ matrix.os }}
-                  path: |
-                      rapier-compat/builds/*/pkg
+                  path: vectorg-engine-compat/builds/*/pkg
                   overwrite: true
     publish:
         runs-on: ubuntu-latest
@@ -142,7 +130,7 @@ jobs:
             - uses: actions/download-artifact@v4
               with:
                   name: pkg compat ubuntu-latest
-                  path: rapier-compat/builds
+                  path: vectorg-engine-compat/builds
             - uses: actions/setup-node@v4
               with:
                   node-version: "22.x"

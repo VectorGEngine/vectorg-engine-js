@@ -699,7 +699,6 @@ export class DynamicRayCastVehicleController {
         this.raw.set_wheel_anti_lock_brake(i, value);
     }
 
-
     /**
      * The i-th wheel’s anti-roll value.
      *
@@ -758,12 +757,19 @@ export class DynamicRayCastVehicleController {
         this.raw.set_wheel_tire_type(i, tireType);
     }
 
-    public addTireType(tireType: string, friction:number): DynamicRayCastVehicleController {
+    public addTireType(
+        tireType: string,
+        friction: number,
+    ): DynamicRayCastVehicleController {
         this.raw.add_tire_type(tireType, friction);
         return this;
     }
 
-    public addSurfaceToTireType(tireType: string, surface: string, friction: number): DynamicRayCastVehicleController {
+    public addSurfaceToTireType(
+        tireType: string,
+        surface: string,
+        friction: number,
+    ): DynamicRayCastVehicleController {
         this.raw.add_surface_to_tire_type(tireType, surface, friction);
         return this;
     }
@@ -826,7 +832,7 @@ export class DynamicRayCastVehicleController {
      */
     public wheelSkidInfo(i: number): number | null {
         return this.raw.wheel_skid_info(i);
-    }    
+    }
 
     /**
      *  The i-th wheel’s ground friction.

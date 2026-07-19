@@ -4,8 +4,8 @@ use crate::geometry::RawColliderSet;
 use crate::math::RawSdpMatrix3;
 use crate::math::{RawRotation, RawVector};
 use crate::utils::{self, FlatHandle};
+use engine::dynamics::MassProperties;
 use na::Point;
-use rapier::dynamics::MassProperties;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -149,7 +149,7 @@ impl RawRigidBodySet {
     /// If this rigid body is kinematic, sets its future translation after the next timestep integration.
     ///
     /// This should be used instead of `rigidBody.setTranslation` to make the dynamic object
-    /// interacting with this kinematic body behave as expected. Internally, Rapier will compute
+    /// interacting with this kinematic body behave as expected. Internally, VectorG Engine will compute
     /// an artificial velocity for this rigid-body from its current position and its next kinematic
     /// position. This velocity will be used to compute forces on dynamic bodies interacting with
     /// this body.
@@ -168,7 +168,7 @@ impl RawRigidBodySet {
     /// If this rigid body is kinematic, sets its future translation after the next timestep integration.
     ///
     /// This should be used instead of `rigidBody.setTranslation` to make the dynamic object
-    /// interacting with this kinematic body behave as expected. Internally, Rapier will compute
+    /// interacting with this kinematic body behave as expected. Internally, VectorG Engine will compute
     /// an artificial velocity for this rigid-body from its current position and its next kinematic
     /// position. This velocity will be used to compute forces on dynamic bodies interacting with
     /// this body.
@@ -186,7 +186,7 @@ impl RawRigidBodySet {
     /// If this rigid body is kinematic, sets its future rotation after the next timestep integration.
     ///
     /// This should be used instead of `rigidBody.setRotation` to make the dynamic object
-    /// interacting with this kinematic body behave as expected. Internally, Rapier will compute
+    /// interacting with this kinematic body behave as expected. Internally, VectorG Engine will compute
     /// an artificial velocity for this rigid-body from its current position and its next kinematic
     /// position. This velocity will be used to compute forces on dynamic bodies interacting with
     /// this body.
@@ -215,7 +215,7 @@ impl RawRigidBodySet {
     /// If this rigid body is kinematic, sets its future rotation after the next timestep integration.
     ///
     /// This should be used instead of `rigidBody.setRotation` to make the dynamic object
-    /// interacting with this kinematic body behave as expected. Internally, Rapier will compute
+    /// interacting with this kinematic body behave as expected. Internally, VectorG Engine will compute
     /// an artificial velocity for this rigid-body from its current position and its next kinematic
     /// position. This velocity will be used to compute forces on dynamic bodies interacting with
     /// this body.
