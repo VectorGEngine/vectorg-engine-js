@@ -26,6 +26,7 @@ export interface VehicleTransmissionConfig {
     forwardRatios: number[];
     finalDriveRatio: number;
     automatic: boolean;
+    autoClutch: boolean;
     autoReverse: boolean;
     clutchResponse: number;
     shiftCooldown: number;
@@ -83,6 +84,7 @@ export interface VehicleInput {
 
 export interface VehicleState {
     engineRpm: number;
+    engineRunning: boolean;
     currentGear: number;
     reverseDirection: boolean;
     vehicleSpeed: number;
@@ -147,6 +149,7 @@ export class DynamicRayCastVehicleController {
             new Float32Array(transmission.forwardRatios),
             transmission.finalDriveRatio,
             transmission.automatic,
+            transmission.autoClutch,
             transmission.autoReverse,
             transmission.clutchResponse,
             transmission.shiftCooldown,
@@ -282,6 +285,7 @@ export class DynamicRayCastVehicleController {
     private readState(): VehicleState {
         return {
             engineRpm: this.raw.engine_rpm(),
+            engineRunning: this.raw.engine_running(),
             currentGear: this.raw.current_gear(),
             reverseDirection: this.raw.reverse_direction(),
             vehicleSpeed: this.raw.vehicle_speed(),

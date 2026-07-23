@@ -63,6 +63,7 @@ impl RawVehicleControllerConfig {
         forward_ratios: js_sys::Float32Array,
         final_drive_ratio: Real,
         automatic: bool,
+        auto_clutch: bool,
         auto_reverse: bool,
         clutch_response: Real,
         shift_cooldown: Real,
@@ -75,6 +76,7 @@ impl RawVehicleControllerConfig {
         transmission.forward_ratios = forward_ratios.to_vec();
         transmission.final_drive_ratio = final_drive_ratio;
         transmission.automatic = automatic;
+        transmission.auto_clutch = auto_clutch;
         transmission.auto_reverse = auto_reverse;
         transmission.clutch_response = clutch_response;
         transmission.shift_cooldown = shift_cooldown;
@@ -204,6 +206,9 @@ impl RawDynamicRayCastVehicleController {
 
     pub fn engine_rpm(&self) -> Real {
         self.controller.state().engine_rpm
+    }
+    pub fn engine_running(&self) -> bool {
+        self.controller.state().engine_running
     }
     pub fn current_gear(&self) -> i32 {
         self.controller.state().current_gear
