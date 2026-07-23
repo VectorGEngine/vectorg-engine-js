@@ -178,6 +178,10 @@ impl RawDynamicRayCastVehicleController {
         });
     }
 
+    pub fn reset(&mut self) {
+        self.controller.reset();
+    }
+
     pub fn shift_up(&mut self) {
         self.controller.shift_up();
     }

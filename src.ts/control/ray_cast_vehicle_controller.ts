@@ -243,6 +243,12 @@ export class DynamicRayCastVehicleController {
         );
     }
 
+    /** Restores transient simulation state while preserving vehicle configuration and tuning. */
+    public reset() {
+        this.raw.reset();
+        this.currentState = this.readState();
+    }
+
     /** Requests the next higher gear. */
     public shiftUp() {
         this.raw.shift_up();
