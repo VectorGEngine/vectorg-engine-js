@@ -30,6 +30,8 @@ export interface VehicleTransmissionConfig {
     autoReverse: boolean;
     clutchResponse: number;
     shiftCooldown: number;
+    autoBlip: boolean;
+    autoBlipDuration: number;
     upshiftRangePosition: number;
     downshiftRangePosition: number;
     stoppedSpeed: number;
@@ -153,6 +155,8 @@ export class DynamicRayCastVehicleController {
             transmission.autoReverse,
             transmission.clutchResponse,
             transmission.shiftCooldown,
+            transmission.autoBlip,
+            transmission.autoBlipDuration,
             transmission.upshiftRangePosition,
             transmission.downshiftRangePosition,
             transmission.stoppedSpeed,

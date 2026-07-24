@@ -67,6 +67,8 @@ impl RawVehicleControllerConfig {
         auto_reverse: bool,
         clutch_response: Real,
         shift_cooldown: Real,
+        auto_blip: bool,
+        auto_blip_duration: Real,
         upshift_range_position: Real,
         downshift_range_position: Real,
         stopped_speed: Real,
@@ -80,6 +82,8 @@ impl RawVehicleControllerConfig {
         transmission.auto_reverse = auto_reverse;
         transmission.clutch_response = clutch_response;
         transmission.shift_cooldown = shift_cooldown;
+        transmission.auto_blip = auto_blip;
+        transmission.auto_blip_duration = auto_blip_duration;
         transmission.upshift_range_position = upshift_range_position;
         transmission.downshift_range_position = downshift_range_position;
         transmission.stopped_speed = stopped_speed;
