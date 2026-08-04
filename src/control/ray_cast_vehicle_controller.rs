@@ -11,6 +11,10 @@ use engine::math::Real;
 use engine::pipeline::{QueryFilter, QueryFilterFlags};
 use wasm_bindgen::prelude::*;
 
+fn traction_control_strength(value: Real) -> Option<Real> {
+    value.is_finite().then(|| value.clamp(0.0, 1.0))
+}
+
 #[wasm_bindgen]
 pub struct RawVehicleControllerConfig {
     config: VehicleControllerConfig,
@@ -549,7 +553,10 @@ impl RawDynamicRayCastVehicleController {
         self.controller.wheels().get(i).map(|w| w.traction_control)
     }
     pub fn set_wheel_traction_control(&mut self, i: usize, value: Real) {
-        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+        if let (Some(wheel), Some(value)) = (
+            self.controller.wheels_mut().get_mut(i),
+            traction_control_strength(value),
+        ) {
             wheel.traction_control = value;
         }
     }
@@ -725,5 +732,20 @@ impl RawDynamicRayCastVehicleController {
             .get(i)
             .and_then(|w| w.raycast_info().ground_object)
             .map(|h| utils::flat_handle(h.0))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{traction_control_strength, Real};
+
+    #[test]
+    fn traction_control_strength_rejects_non_finite_values_and_clamps_finite_values() {
+        assert_eq!(traction_control_strength(-1.0), Some(0.0));
+        assert_eq!(traction_control_strength(0.5), Some(0.5));
+        assert_eq!(traction_control_strength(2.0), Some(1.0));
+        assert_eq!(traction_control_strength(Real::NAN), None);
+        assert_eq!(traction_control_strength(Real::INFINITY), None);
+        assert_eq!(traction_control_strength(Real::NEG_INFINITY), None);
     }
 }
