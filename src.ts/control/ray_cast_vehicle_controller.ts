@@ -1,6 +1,8 @@
 import {
     RawDynamicRayCastVehicleController,
+    RawVehicleEngineState,
     RawVehicleControllerConfig,
+    RawVehicleShiftOutcome,
 } from "../raw";
 import {Vector, VectorOps} from "../math";
 import {Collider, ColliderSet, InteractionGroups} from "../geometry";
@@ -61,8 +63,11 @@ export interface VehicleDynamicsConfig {
 
 export interface VehicleSteeringConfig {
     maxAngle: number;
+    /** Speed where assisted steering reaches its minimum multiplier. */
     speedSensitivity: number;
+    /** Assisted steering multiplier retained at and above the sensitivity speed. */
     minimumSpeedFactor: number;
+    /** Enables speed-sensitive range reduction and counter-steering. */
     assist: boolean;
     /** Drift correction strength (`0` = none, `1` = full correction). */
     driftCorrection: number;
@@ -84,9 +89,55 @@ export interface VehicleInput {
     steering: number;
 }
 
+export enum VehicleShiftOutcome {
+    Accepted,
+    Ignored,
+    ClutchRejected,
+}
+
+export enum VehicleEngineState {
+    Stopped,
+    Starting,
+    Running,
+}
+
+function vehicleEngineState(state: RawVehicleEngineState): VehicleEngineState {
+    switch (state) {
+        case RawVehicleEngineState.Stopped:
+            return VehicleEngineState.Stopped;
+        case RawVehicleEngineState.Starting:
+            return VehicleEngineState.Starting;
+        case RawVehicleEngineState.Running:
+            return VehicleEngineState.Running;
+        default:
+            throw new Error(`Unknown vehicle engine state: ${state}`);
+    }
+}
+
+function vehicleShiftOutcome(
+    outcome: RawVehicleShiftOutcome,
+): VehicleShiftOutcome {
+    switch (outcome) {
+        case RawVehicleShiftOutcome.Accepted:
+            return VehicleShiftOutcome.Accepted;
+        case RawVehicleShiftOutcome.Ignored:
+            return VehicleShiftOutcome.Ignored;
+        case RawVehicleShiftOutcome.ClutchRejected:
+            return VehicleShiftOutcome.ClutchRejected;
+        default:
+            throw new Error(`Unknown vehicle shift outcome: ${outcome}`);
+    }
+}
+
 export interface VehicleState {
     engineRpm: number;
-    engineRunning: boolean;
+    engineState: VehicleEngineState;
+    engineStartProgress: number;
+    engineStateSequence: number;
+    gearShiftSequence: number;
+    gearShiftAcceptedSequence: number;
+    gearShiftIgnoredSequence: number;
+    gearShiftRejectedSequence: number;
     currentGear: number;
     reverseDirection: boolean;
     vehicleSpeed: number;
@@ -257,21 +308,21 @@ export class DynamicRayCastVehicleController {
     }
 
     /** Requests the next higher gear. */
-    public shiftUp() {
-        this.raw.shift_up();
+    public shiftUp(): VehicleShiftOutcome {
+        return vehicleShiftOutcome(this.raw.shift_up());
     }
 
     /** Requests the next lower gear. */
-    public shiftDown() {
-        this.raw.shift_down();
+    public shiftDown(): VehicleShiftOutcome {
+        return vehicleShiftOutcome(this.raw.shift_down());
     }
 
     /** Selects a gear, where -1 is reverse and 0 is neutral. */
-    public setGear(gear: number) {
-        this.raw.set_gear(gear);
+    public setGear(gear: number): VehicleShiftOutcome {
+        return vehicleShiftOutcome(this.raw.set_gear(gear));
     }
 
-    /** Enables or disables velocity-based counter-steering assistance. */
+    /** Enables or disables speed-sensitive range reduction and counter-steering. */
     public setSteeringAssist(enabled: boolean) {
         this.raw.set_steering_assist(enabled);
     }
@@ -289,7 +340,13 @@ export class DynamicRayCastVehicleController {
     private readState(): VehicleState {
         return {
             engineRpm: this.raw.engine_rpm(),
-            engineRunning: this.raw.engine_running(),
+            engineState: vehicleEngineState(this.raw.engine_state()),
+            engineStartProgress: this.raw.engine_start_progress(),
+            engineStateSequence: this.raw.engine_state_sequence(),
+            gearShiftSequence: this.raw.gear_shift_sequence(),
+            gearShiftAcceptedSequence: this.raw.gear_shift_accepted_sequence(),
+            gearShiftIgnoredSequence: this.raw.gear_shift_ignored_sequence(),
+            gearShiftRejectedSequence: this.raw.gear_shift_rejected_sequence(),
             currentGear: this.raw.current_gear(),
             reverseDirection: this.raw.reverse_direction(),
             vehicleSpeed: this.raw.vehicle_speed(),

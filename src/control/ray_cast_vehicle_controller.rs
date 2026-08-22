@@ -4,8 +4,8 @@ use crate::math::RawVector;
 use crate::pipeline::RawQueryPipeline;
 use crate::utils::{self, FlatHandle};
 use engine::control::{
-    DynamicRayCastVehicleController, VehicleControllerConfig, VehicleInput, WheelAxle, WheelRole,
-    WheelTuning,
+    DynamicRayCastVehicleController, VehicleControllerConfig, VehicleEngineState, VehicleInput,
+    VehicleShiftOutcome, WheelAxle, WheelRole, WheelTuning,
 };
 use engine::math::Real;
 use engine::pipeline::{QueryFilter, QueryFilterFlags};
@@ -13,6 +13,42 @@ use wasm_bindgen::prelude::*;
 
 fn traction_control_strength(value: Real) -> Option<Real> {
     value.is_finite().then(|| value.clamp(0.0, 1.0))
+}
+
+#[wasm_bindgen]
+#[derive(Copy, Clone)]
+pub enum RawVehicleShiftOutcome {
+    Accepted,
+    Ignored,
+    ClutchRejected,
+}
+
+impl From<VehicleShiftOutcome> for RawVehicleShiftOutcome {
+    fn from(outcome: VehicleShiftOutcome) -> Self {
+        match outcome {
+            VehicleShiftOutcome::Accepted => Self::Accepted,
+            VehicleShiftOutcome::Ignored => Self::Ignored,
+            VehicleShiftOutcome::ClutchRejected => Self::ClutchRejected,
+        }
+    }
+}
+
+#[wasm_bindgen]
+#[derive(Copy, Clone)]
+pub enum RawVehicleEngineState {
+    Stopped,
+    Starting,
+    Running,
+}
+
+impl From<VehicleEngineState> for RawVehicleEngineState {
+    fn from(state: VehicleEngineState) -> Self {
+        match state {
+            VehicleEngineState::Stopped => Self::Stopped,
+            VehicleEngineState::Starting => Self::Starting,
+            VehicleEngineState::Running => Self::Running,
+        }
+    }
 }
 
 #[wasm_bindgen]
@@ -192,16 +228,16 @@ impl RawDynamicRayCastVehicleController {
         self.controller.reset();
     }
 
-    pub fn shift_up(&mut self) {
-        self.controller.shift_up();
+    pub fn shift_up(&mut self) -> RawVehicleShiftOutcome {
+        self.controller.shift_up().into()
     }
 
-    pub fn shift_down(&mut self) {
-        self.controller.shift_down();
+    pub fn shift_down(&mut self) -> RawVehicleShiftOutcome {
+        self.controller.shift_down().into()
     }
 
-    pub fn set_gear(&mut self, gear: i32) {
-        self.controller.set_gear(gear);
+    pub fn set_gear(&mut self, gear: i32) -> RawVehicleShiftOutcome {
+        self.controller.set_gear(gear).into()
     }
 
     pub fn set_steering_assist(&mut self, enabled: bool) {
@@ -215,8 +251,26 @@ impl RawDynamicRayCastVehicleController {
     pub fn engine_rpm(&self) -> Real {
         self.controller.state().engine_rpm
     }
-    pub fn engine_running(&self) -> bool {
-        self.controller.state().engine_running
+    pub fn engine_start_progress(&self) -> Real {
+        self.controller.state().engine_start_progress
+    }
+    pub fn engine_state(&self) -> RawVehicleEngineState {
+        self.controller.engine_state().into()
+    }
+    pub fn engine_state_sequence(&self) -> u32 {
+        self.controller.state().engine_state_sequence
+    }
+    pub fn gear_shift_sequence(&self) -> u32 {
+        self.controller.state().gear_shift_sequence
+    }
+    pub fn gear_shift_accepted_sequence(&self) -> u32 {
+        self.controller.state().gear_shift_accepted_sequence
+    }
+    pub fn gear_shift_ignored_sequence(&self) -> u32 {
+        self.controller.state().gear_shift_ignored_sequence
+    }
+    pub fn gear_shift_rejected_sequence(&self) -> u32 {
+        self.controller.state().gear_shift_rejected_sequence
     }
     pub fn current_gear(&self) -> i32 {
         self.controller.state().current_gear
