@@ -176,6 +176,7 @@ impl RawVehicleControllerConfig {
     pub fn set_steering(
         &mut self,
         max_angle: Real,
+        road_wheel_curve: Real,
         speed_sensitivity: Real,
         minimum_speed_factor: Real,
         assist: bool,
@@ -183,6 +184,7 @@ impl RawVehicleControllerConfig {
     ) {
         let steering = &mut self.config.steering;
         steering.max_angle = max_angle;
+        steering.road_wheel_curve = road_wheel_curve;
         steering.speed_sensitivity = speed_sensitivity;
         steering.minimum_speed_factor = minimum_speed_factor;
         steering.assist = assist;
@@ -286,6 +288,9 @@ impl RawDynamicRayCastVehicleController {
     }
     pub fn steering_angle(&self) -> Real {
         self.controller.state().steering_angle
+    }
+    pub fn driver_steering_angle(&self) -> Real {
+        self.controller.state().driver_steering_angle
     }
     pub fn engine_load(&self) -> Real {
         self.controller.state().engine_load

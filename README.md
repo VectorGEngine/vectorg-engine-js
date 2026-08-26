@@ -28,6 +28,34 @@ From the repository root:
 
 Generated packages are written under `builds/`. To build WebAssembly-inlined packages, run `npm run build` in `vectorg-engine-compat/` after preparing the standard builds.
 
+### Windows WebAssembly build
+
+The Windows build requires:
+
+- Rust installed through `rustup`, with `cargo.exe` available at `%USERPROFILE%\.cargo\bin\cargo.exe`;
+- the `wasm32-unknown-unknown` Rust target; and
+- the repository-local `wasm-pack` command at `node_modules\.bin\wasm-pack.cmd`.
+
+Install the Rust WebAssembly target once:
+
+```powershell
+rustup target add wasm32-unknown-unknown
+```
+
+From the repository root, run:
+
+```powershell
+.\build_windows.cmd
+```
+
+This command prepares the `dim3` non-deterministic project, cleans its Rust build, and builds only the WebAssembly package. It does not run npm installation, compile the TypeScript API, generate documentation, create a tarball, or install the package into the game.
+
+The generated WebAssembly package is written to:
+
+```text
+builds\vectorg-engine-3d\pkg
+```
+
 ## Origin and attribution
 
 VectorG Engine JS is derived from Rapier.js and Rapier, originally developed by [Dimforge](https://dimforge.com). It preserves the original license, copyright notices, and attribution.

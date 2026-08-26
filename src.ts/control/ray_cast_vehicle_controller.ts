@@ -63,6 +63,8 @@ export interface VehicleDynamicsConfig {
 
 export interface VehicleSteeringConfig {
     maxAngle: number;
+    /** Linear-to-cubic road-wheel response (`0` = linear, `1` = cubic). */
+    roadWheelCurve: number;
     /** Speed where assisted steering reaches its minimum multiplier. */
     speedSensitivity: number;
     /** Assisted steering multiplier retained at and above the sensitivity speed. */
@@ -143,6 +145,8 @@ export interface VehicleState {
     vehicleSpeed: number;
     drivenWheelSpeed: number;
     steeringAngle: number;
+    /** Uncurved, speed-adjusted driver steering angle in road-wheel radians. */
+    driverSteeringAngle: number;
     engineLoad: number;
     revLimiterAmount: number;
     turboLoad: number;
@@ -237,6 +241,7 @@ export class DynamicRayCastVehicleController {
         const steering = config.steering;
         rawConfig.set_steering(
             steering.maxAngle,
+            steering.roadWheelCurve,
             steering.speedSensitivity,
             steering.minimumSpeedFactor,
             steering.assist,
@@ -352,6 +357,7 @@ export class DynamicRayCastVehicleController {
             vehicleSpeed: this.raw.vehicle_speed(),
             drivenWheelSpeed: this.raw.driven_wheel_speed(),
             steeringAngle: this.raw.steering_angle(),
+            driverSteeringAngle: this.raw.driver_steering_angle(),
             engineLoad: this.raw.engine_load(),
             revLimiterAmount: this.raw.rev_limiter_amount(),
             turboLoad: this.raw.turbo_load(),
