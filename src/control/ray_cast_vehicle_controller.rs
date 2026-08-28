@@ -310,6 +310,9 @@ impl RawDynamicRayCastVehicleController {
     pub fn abs_activity(&self) -> Real {
         self.controller.state().abs_activity
     }
+    pub fn esc_activity(&self) -> Real {
+        self.controller.state().esc_activity
+    }
     pub fn traction_control_activity(&self) -> Real {
         self.controller.state().traction_control_activity
     }

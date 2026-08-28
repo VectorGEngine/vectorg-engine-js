@@ -153,6 +153,7 @@ export interface VehicleState {
     turboReleaseSequence: number;
     wheelsInContact: number;
     absActivity: number;
+    escActivity: number;
     tractionControlActivity: number;
     forceFeedback: number;
     steeringFriction: number;
@@ -364,6 +365,7 @@ export class DynamicRayCastVehicleController {
             turboReleaseSequence: this.raw.turbo_release_sequence(),
             wheelsInContact: this.raw.wheels_in_contact(),
             absActivity: this.raw.abs_activity(),
+            escActivity: this.raw.esc_activity(),
             tractionControlActivity: this.raw.traction_control_activity(),
             forceFeedback: this.raw.force_feedback(),
             steeringFriction: this.raw.steering_friction(),
