@@ -55,6 +55,10 @@ export interface VehicleDynamicsConfig {
     frontalArea: number;
     rollingResistance: number;
     downforceCoefficient: number;
+    downforcePoints: Array<{
+        position: Vector;
+        coefficient: number;
+    }>;
     baseLinearDamping: number;
     linearDampingPerSpeed: number;
     baseAngularDamping: number;
@@ -238,6 +242,23 @@ export class DynamicRayCastVehicleController {
             dynamics.linearDampingPerSpeed,
             dynamics.baseAngularDamping,
             dynamics.angularDampingPerSpeed,
+        );
+        const downforcePointPositions = new Float32Array(
+            dynamics.downforcePoints.length * 3,
+        );
+        const downforcePointCoefficients = new Float32Array(
+            dynamics.downforcePoints.length,
+        );
+        dynamics.downforcePoints.forEach((point, index) => {
+            const positionOffset = index * 3;
+            downforcePointPositions[positionOffset] = point.position.x;
+            downforcePointPositions[positionOffset + 1] = point.position.y;
+            downforcePointPositions[positionOffset + 2] = point.position.z;
+            downforcePointCoefficients[index] = point.coefficient;
+        });
+        rawConfig.set_downforce_points(
+            downforcePointPositions,
+            downforcePointCoefficients,
         );
         const steering = config.steering;
         rawConfig.set_steering(

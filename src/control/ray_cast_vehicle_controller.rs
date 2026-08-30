@@ -4,10 +4,10 @@ use crate::math::RawVector;
 use crate::pipeline::RawQueryPipeline;
 use crate::utils::{self, FlatHandle};
 use engine::control::{
-    DynamicRayCastVehicleController, VehicleControllerConfig, VehicleEngineState, VehicleInput,
-    VehicleShiftOutcome, WheelAxle, WheelRole, WheelTuning,
+    DynamicRayCastVehicleController, VehicleControllerConfig, VehicleDownforcePoint,
+    VehicleEngineState, VehicleInput, VehicleShiftOutcome, WheelAxle, WheelRole, WheelTuning,
 };
-use engine::math::Real;
+use engine::math::{Real, Vector};
 use engine::pipeline::{QueryFilter, QueryFilterFlags};
 use wasm_bindgen::prelude::*;
 
@@ -171,6 +171,27 @@ impl RawVehicleControllerConfig {
         dynamics.linear_damping_per_speed = linear_damping_per_speed;
         dynamics.base_angular_damping = base_angular_damping;
         dynamics.angular_damping_per_speed = angular_damping_per_speed;
+    }
+
+    pub fn set_downforce_points(
+        &mut self,
+        positions: js_sys::Float32Array,
+        coefficients: js_sys::Float32Array,
+    ) {
+        let positions = positions.to_vec();
+        let coefficients = coefficients.to_vec();
+        if positions.len() != coefficients.len() * 3 {
+            self.config.dynamics.downforce_points.clear();
+            return;
+        }
+        self.config.dynamics.downforce_points = positions
+            .chunks_exact(3)
+            .zip(coefficients)
+            .map(|(position, coefficient)| VehicleDownforcePoint {
+                position: Vector::new(position[0], position[1], position[2]),
+                coefficient,
+            })
+            .collect();
     }
 
     pub fn set_steering(
