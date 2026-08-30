@@ -51,6 +51,8 @@ export interface VehicleDynamicsConfig {
     absStrength: number;
     tractionControlStrength: number;
     escStrength: number;
+    frontAntiRollBarStiffness: number;
+    rearAntiRollBarStiffness: number;
     dragCoefficient: number;
     frontalArea: number;
     rollingResistance: number;
@@ -234,6 +236,8 @@ export class DynamicRayCastVehicleController {
             dynamics.absStrength,
             dynamics.tractionControlStrength,
             dynamics.escStrength,
+            dynamics.frontAntiRollBarStiffness,
+            dynamics.rearAntiRollBarStiffness,
             dynamics.dragCoefficient,
             dynamics.frontalArea,
             dynamics.rollingResistance,

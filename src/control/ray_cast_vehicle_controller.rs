@@ -149,6 +149,8 @@ impl RawVehicleControllerConfig {
         abs_strength: Real,
         traction_control_strength: Real,
         esc_strength: Real,
+        front_anti_roll_bar_stiffness: Real,
+        rear_anti_roll_bar_stiffness: Real,
         drag_coefficient: Real,
         frontal_area: Real,
         rolling_resistance: Real,
@@ -163,6 +165,8 @@ impl RawVehicleControllerConfig {
         dynamics.abs_strength = abs_strength;
         dynamics.traction_control_strength = traction_control_strength;
         dynamics.esc_strength = esc_strength;
+        dynamics.front_anti_roll_bar_stiffness = front_anti_roll_bar_stiffness;
+        dynamics.rear_anti_roll_bar_stiffness = rear_anti_roll_bar_stiffness;
         dynamics.drag_coefficient = drag_coefficient;
         dynamics.frontal_area = frontal_area;
         dynamics.rolling_resistance = rolling_resistance;
