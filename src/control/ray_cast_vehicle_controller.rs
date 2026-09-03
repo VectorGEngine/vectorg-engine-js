@@ -711,7 +711,6 @@ impl RawDynamicRayCastVehicleController {
     pub fn set_wheel_contact_damping(&mut self, i: usize, value: Real) {
         if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
             wheel.contact_damping = value;
-            wheel.base_contact_damping = value;
         }
     }
 
