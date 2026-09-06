@@ -730,24 +730,6 @@ export class DynamicRayCastVehicleController {
     }
 
     /**
-     * The multiplier of friction between a tire and the collider it’s on top of.
-     *
-     * The larger the value, the stronger side friction will be.
-     */
-    public wheelSideFrictionStiffness(i: number): number | null {
-        return this.raw.wheel_side_friction_stiffness(i);
-    }
-
-    /**
-     * The multiplier of friction between a tire and the collider it’s on top of.
-     *
-     * The larger the value, the stronger side friction will be.
-     */
-    public setWheelSideFrictionStiffness(i: number, value: number) {
-        this.raw.set_wheel_side_friction_stiffness(i, value);
-    }
-
-    /**
      *  The i-th wheel’s current target angle (radians) on its axle.
      */
     public wheelTargetRotation(i: number): number | null {
@@ -892,14 +874,6 @@ export class DynamicRayCastVehicleController {
 
     public setWheelForwardFactor(i: number, value: number) {
         this.raw.set_wheel_forward_factor(i, value);
-    }
-
-    public wheelBrakeFactor(i: number): number | null {
-        return this.raw.wheel_brake_factor(i);
-    }
-
-    public setWheelBrakeFactor(i: number, value: number) {
-        this.raw.set_wheel_brake_factor(i, value);
     }
 
     public wheelContactDamping(i: number): number | null {

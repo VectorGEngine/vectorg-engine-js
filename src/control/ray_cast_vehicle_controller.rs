@@ -596,19 +596,6 @@ impl RawDynamicRayCastVehicleController {
         }
     }
 
-    pub fn wheel_side_friction_stiffness(&self, i: usize) -> Option<f32> {
-        self.controller
-            .wheels()
-            .get(i)
-            .map(|w| w.side_friction_stiffness)
-    }
-
-    pub fn set_wheel_side_friction_stiffness(&mut self, i: usize, stiffness: f32) {
-        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
-            wheel.side_friction_stiffness = stiffness;
-        }
-    }
-
     pub fn wheel_target_rotation(&self, i: usize) -> Option<Real> {
         self.controller.wheels().get(i).map(|w| w.target_rotation)
     }
@@ -691,16 +678,6 @@ impl RawDynamicRayCastVehicleController {
     pub fn set_wheel_forward_factor(&mut self, i: usize, value: Real) {
         if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
             wheel.fwd_factor = value;
-        }
-    }
-
-    pub fn wheel_brake_factor(&self, i: usize) -> Option<Real> {
-        self.controller.wheels().get(i).map(|w| w.brake_factor)
-    }
-
-    pub fn set_wheel_brake_factor(&mut self, i: usize, value: Real) {
-        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
-            wheel.brake_factor = value;
         }
     }
 
