@@ -261,8 +261,13 @@ impl RawDynamicRayCastVehicleController {
         });
     }
 
-    pub fn reset(&mut self) {
+    pub fn reset(&mut self, bodies: &mut RawRigidBodySet) {
+        self.controller.cancel_vehicle_update(&mut bodies.0);
         self.controller.reset();
+    }
+
+    pub fn cancel_vehicle_update(&mut self, bodies: &mut RawRigidBodySet) {
+        self.controller.cancel_vehicle_update(&mut bodies.0);
     }
 
     pub fn shift_up(&mut self) -> RawVehicleShiftOutcome {
@@ -421,6 +426,7 @@ impl RawDynamicRayCastVehicleController {
     pub fn update_vehicle(
         &mut self,
         dt: Real,
+        gravity: &RawVector,
         bodies: &mut RawRigidBodySet,
         colliders: &RawColliderSet,
         queries: &RawQueryPipeline,
@@ -440,12 +446,17 @@ impl RawDynamicRayCastVehicleController {
 
             self.controller.update_vehicle(
                 dt,
+                &gravity.0,
                 &mut bodies.0,
                 &colliders.0,
                 &queries.0,
                 query_filter,
             );
         });
+    }
+
+    pub fn finish_vehicle_update(&mut self, bodies: &mut RawRigidBodySet) {
+        self.controller.finish_vehicle_update(&mut bodies.0);
     }
 
     /*

@@ -287,6 +287,7 @@ export class DynamicRayCastVehicleController {
     /** @internal */
     public free() {
         if (!!this.raw) {
+            this.raw.cancel_vehicle_update(this.bodies.raw);
             this.raw.free();
         }
 
@@ -294,23 +295,27 @@ export class DynamicRayCastVehicleController {
     }
 
     /**
-     * Updates the vehicle’s velocity based on its suspension, engine force, and brake.
+     * Integrates gravity, suspension, and tires together before the world step.
      *
-     * This directly updates the velocity of its chassis rigid-body.
+     * World.step restores automatic chassis gravity and refreshes telemetry afterward.
      *
      * @param dt - Time increment used to integrate forces.
+     * @param gravity - The world's gravitational acceleration.
      * @param filterFlags - Flag to exclude categories of objects from the wheels’ ray-cast.
      * @param filterGroups - Only colliders compatible with these groups will be hit by the wheels’ ray-casts.
      * @param filterPredicate - Callback to filter out which collider will be hit by the wheels’ ray-casts.
      */
     public updateVehicle(
         dt: number,
+        gravity: Vector,
         filterFlags?: QueryFilterFlags,
         filterGroups?: InteractionGroups,
         filterPredicate?: (collider: Collider) => boolean,
     ) {
+        const rawGravity = VectorOps.intoRaw(gravity);
         this.raw.update_vehicle(
             dt,
+            rawGravity,
             this.bodies.raw,
             this.colliders.raw,
             this.queries.raw,
@@ -318,6 +323,13 @@ export class DynamicRayCastVehicleController {
             filterGroups,
             this.colliders.castClosure(filterPredicate),
         );
+        rawGravity.free();
+        this.currentState = this.readState();
+    }
+
+    /** @internal Collects wheel and assist state after the world solver completes. */
+    public finishVehicleUpdate() {
+        this.raw.finish_vehicle_update(this.bodies.raw);
         this.currentState = this.readState();
     }
 
@@ -334,7 +346,7 @@ export class DynamicRayCastVehicleController {
 
     /** Restores transient simulation state while preserving vehicle configuration and tuning. */
     public reset() {
-        this.raw.reset();
+        this.raw.reset(this.bodies.raw);
         this.currentState = this.readState();
     }
 

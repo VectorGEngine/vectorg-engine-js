@@ -105,6 +105,9 @@ export class World {
      * so there is no need to call their `.free()` methods individually.
      */
     public free() {
+        // #if DIM3
+        this.vehicleControllers.forEach((controller) => controller.free());
+        // #endif
         this.integrationParameters.free();
         this.islands.free();
         this.broadPhase.free();
@@ -120,10 +123,6 @@ export class World {
         this.debugRenderPipeline.free();
         this.characterControllers.forEach((controller) => controller.free());
         this.pidControllers.forEach((controller) => controller.free());
-
-        // #if DIM3
-        this.vehicleControllers.forEach((controller) => controller.free());
-        // #endif
 
         this.integrationParameters = undefined;
         this.islands = undefined;
@@ -290,6 +289,11 @@ export class World {
             hooks,
         );
         this.queryPipeline.update(this.colliders);
+        // #if DIM3
+        this.vehicleControllers.forEach((controller) =>
+            controller.finishVehicleUpdate(),
+        );
+        // #endif
     }
 
     /**
