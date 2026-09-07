@@ -756,18 +756,18 @@ export class DynamicRayCastVehicleController {
     }
 
     /**
-     * The i-th wheel’s brake force.
+     * The i-th wheel’s maximum brake force, in newtons.
      *
-     * This is the maximum amount of braking impulse applied on the i-th wheel to slow down the vehicle.
+     * The engine converts this force to a timestep-scaled braking impulse.
      */
     public wheelMaxBrakeForce(i: number): number | null {
         return this.raw.wheel_max_brake_force(i);
     }
 
     /**
-     * The i-th wheel’s brake force.
+     * Sets the i-th wheel’s maximum brake force, in newtons.
      *
-     * This is the maximum amount of braking impulse applied on the i-th wheel to slow down the vehicle.
+     * The engine converts this force to a timestep-scaled braking impulse.
      */
     public setWheelMaxBrakeForce(i: number, value: number) {
         this.raw.set_wheel_max_brake_force(i, value);
