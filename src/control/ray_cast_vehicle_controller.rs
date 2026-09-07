@@ -15,6 +15,16 @@ fn traction_control_strength(value: Real) -> Option<Real> {
     value.is_finite().then(|| value.clamp(0.0, 1.0))
 }
 
+fn validate_tire_grip(peak: f32, sliding: f32) -> Result<(), JsValue> {
+    if peak.is_finite() && sliding.is_finite() && peak >= 0.0 && sliding >= 0.0 && sliding <= peak {
+        Ok(())
+    } else {
+        Err(JsValue::from_str(
+            "Tire grip must be finite with 0 <= slidingGrip <= peakGrip",
+        ))
+    }
+}
+
 #[wasm_bindgen]
 #[derive(Copy, Clone)]
 pub enum RawVehicleShiftOutcome {
@@ -652,43 +662,28 @@ impl RawDynamicRayCastVehicleController {
         self.controller.set_wheel_tire_type(i, tire_type)
     }
 
-    pub fn add_tire_type(&mut self, tire_type: &str, friction: f32) {
-        self.controller.add_tire_type(tire_type, friction);
+    pub fn add_tire_type(
+        &mut self,
+        tire_type: &str,
+        peak: f32,
+        sliding: f32,
+    ) -> Result<(), JsValue> {
+        validate_tire_grip(peak, sliding)?;
+        self.controller.add_tire_type(tire_type, peak, sliding);
+        Ok(())
     }
 
-    pub fn add_surface_to_tire_type(&mut self, tire_type: &str, surface: &str, friction: f32) {
+    pub fn add_surface_to_tire_type(
+        &mut self,
+        tire_type: &str,
+        surface: &str,
+        peak: f32,
+        sliding: f32,
+    ) -> Result<(), JsValue> {
+        validate_tire_grip(peak, sliding)?;
         self.controller
-            .add_surface_to_tire_type(tire_type, surface, friction);
-    }
-
-    pub fn wheel_side_factor(&self, i: usize) -> Option<Real> {
-        self.controller.wheels().get(i).map(|w| w.side_factor)
-    }
-
-    pub fn set_wheel_side_factor(&mut self, i: usize, value: Real) {
-        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
-            wheel.side_factor = value;
-        }
-    }
-
-    pub fn wheel_forward_factor(&self, i: usize) -> Option<Real> {
-        self.controller.wheels().get(i).map(|w| w.fwd_factor)
-    }
-
-    pub fn set_wheel_forward_factor(&mut self, i: usize, value: Real) {
-        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
-            wheel.fwd_factor = value;
-        }
-    }
-
-    pub fn wheel_contact_damping(&self, i: usize) -> Option<Real> {
-        self.controller.wheels().get(i).map(|w| w.contact_damping)
-    }
-
-    pub fn set_wheel_contact_damping(&mut self, i: usize, value: Real) {
-        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
-            wheel.contact_damping = value;
-        }
+            .add_surface_to_tire_type(tire_type, surface, peak, sliding);
+        Ok(())
     }
 
     /*

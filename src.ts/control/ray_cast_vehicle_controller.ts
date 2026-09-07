@@ -843,45 +843,30 @@ export class DynamicRayCastVehicleController {
         this.raw.set_wheel_tire_type(i, tireType);
     }
 
+    /** Register fallback peak and sliding friction coefficients for a tire type. */
     public addTireType(
         tireType: string,
-        friction: number,
+        peakGrip: number,
+        slidingGrip: number,
     ): DynamicRayCastVehicleController {
-        this.raw.add_tire_type(tireType, friction);
+        this.raw.add_tire_type(tireType, peakGrip, slidingGrip);
         return this;
     }
 
+    /** Override the peak/sliding grip pair for this tire on a specific surface. */
     public addSurfaceToTireType(
         tireType: string,
         surface: string,
-        friction: number,
+        peakGrip: number,
+        slidingGrip: number,
     ): DynamicRayCastVehicleController {
-        this.raw.add_surface_to_tire_type(tireType, surface, friction);
+        this.raw.add_surface_to_tire_type(
+            tireType,
+            surface,
+            peakGrip,
+            slidingGrip,
+        );
         return this;
-    }
-
-    public wheelSideFactor(i: number): number | null {
-        return this.raw.wheel_side_factor(i);
-    }
-
-    public setWheelSideFactor(i: number, value: number) {
-        this.raw.set_wheel_side_factor(i, value);
-    }
-
-    public wheelForwardFactor(i: number): number | null {
-        return this.raw.wheel_forward_factor(i);
-    }
-
-    public setWheelForwardFactor(i: number, value: number) {
-        this.raw.set_wheel_forward_factor(i, value);
-    }
-
-    public wheelContactDamping(i: number): number | null {
-        return this.raw.wheel_contact_damping(i);
-    }
-
-    public setWheelContactDamping(i: number, value: number) {
-        this.raw.set_wheel_contact_damping(i, value);
     }
 
     /*
@@ -905,8 +890,9 @@ export class DynamicRayCastVehicleController {
     /**
      *  The i-th wheel’s skid info.
      *
-     *  This is a value between 0.0 and 1.0 that indicates how much the wheel is skidding.
-     *  A value of 0.0 means the wheel is not skidding, while a value of 1.0 means the wheel is fully skidding.
+     *  Weighted contact-demand ratio for feedback and effects, between 0.0 and 1.0.
+     *  One means demand fits the grip budget; lower values mean demand exceeds it.
+     *  Zero also indicates no grip/contact. This is not a tire-force percentage.
      */
     public wheelSkidInfo(i: number): number | null {
         return this.raw.wheel_skid_info(i);
