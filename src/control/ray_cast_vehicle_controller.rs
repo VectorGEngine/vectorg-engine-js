@@ -215,7 +215,7 @@ impl RawVehicleControllerConfig {
         speed_sensitivity: Real,
         minimum_speed_factor: Real,
         assist: bool,
-        drift_correction: Real,
+        counter_steer_assist: Real,
     ) {
         let steering = &mut self.config.steering;
         steering.max_angle = max_angle;
@@ -223,7 +223,7 @@ impl RawVehicleControllerConfig {
         steering.speed_sensitivity = speed_sensitivity;
         steering.minimum_speed_factor = minimum_speed_factor;
         steering.assist = assist;
-        steering.drift_correction = drift_correction;
+        steering.counter_steer_assist = counter_steer_assist;
     }
 }
 
@@ -286,8 +286,12 @@ impl RawDynamicRayCastVehicleController {
         self.controller.set_steering_assist(enabled);
     }
 
-    pub fn set_drift_correction(&mut self, correction: Real) {
-        self.controller.set_drift_correction(correction);
+    pub fn set_minimum_speed_factor(&mut self, factor: Real) {
+        self.controller.set_minimum_speed_factor(factor);
+    }
+
+    pub fn set_counter_steer_assist(&mut self, strength: Real) {
+        self.controller.set_counter_steer_assist(strength);
     }
 
     pub fn engine_rpm(&self) -> Real {

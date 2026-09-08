@@ -77,8 +77,8 @@ export interface VehicleSteeringConfig {
     minimumSpeedFactor: number;
     /** Enables speed-sensitive range reduction and counter-steering. */
     assist: boolean;
-    /** Drift correction strength (`0` = none, `1` = full correction). */
-    driftCorrection: number;
+    /** Counter-steer assistance strength (`0` = none, `1` = full assistance). */
+    counterSteerAssist: number;
 }
 
 export interface VehicleControllerConfig {
@@ -271,7 +271,7 @@ export class DynamicRayCastVehicleController {
             steering.speedSensitivity,
             steering.minimumSpeedFactor,
             steering.assist,
-            steering.driftCorrection,
+            steering.counterSteerAssist,
         );
         this.raw = new RawDynamicRayCastVehicleController(
             chassis.handle,
@@ -370,9 +370,14 @@ export class DynamicRayCastVehicleController {
         this.raw.set_steering_assist(enabled);
     }
 
-    /** Sets drift correction strength (`0` = none, `1` = full correction). */
-    public setDriftCorrection(correction: number) {
-        this.raw.set_drift_correction(correction);
+    /** Sets the minimum steering range factor at high speed (`0` to `1`). */
+    public setMinimumSpeedFactor(factor: number) {
+        this.raw.set_minimum_speed_factor(factor);
+    }
+
+    /** Sets counter-steer assistance strength (`0` = none, `1` = full assistance). */
+    public setCounterSteerAssist(strength: number) {
+        this.raw.set_counter_steer_assist(strength);
     }
 
     /** Current engine, transmission, driver-assistance, and feedback state. */
