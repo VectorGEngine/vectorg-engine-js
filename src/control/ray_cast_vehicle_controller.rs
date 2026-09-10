@@ -290,6 +290,10 @@ impl RawDynamicRayCastVehicleController {
         self.controller.set_minimum_speed_factor(factor);
     }
 
+    pub fn start_engine(&mut self) {
+        self.controller.start_engine();
+    }
+
     pub fn set_counter_steer_assist(&mut self, strength: Real) {
         self.controller.set_counter_steer_assist(strength);
     }

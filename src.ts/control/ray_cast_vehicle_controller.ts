@@ -350,6 +350,11 @@ export class DynamicRayCastVehicleController {
         this.currentState = this.readState();
     }
 
+    /** Requests the starter sequence if stopped; running or starting engines are unchanged. */
+    public startEngine() {
+        this.raw.start_engine();
+    }
+
     /** Requests the next higher gear. */
     public shiftUp(): VehicleShiftOutcome {
         return vehicleShiftOutcome(this.raw.shift_up());
