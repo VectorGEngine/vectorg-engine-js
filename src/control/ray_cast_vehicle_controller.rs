@@ -164,7 +164,6 @@ impl RawVehicleControllerConfig {
         drag_coefficient: Real,
         frontal_area: Real,
         rolling_resistance: Real,
-        downforce_coefficient: Real,
         base_linear_damping: Real,
         linear_damping_per_speed: Real,
         base_angular_damping: Real,
@@ -180,32 +179,43 @@ impl RawVehicleControllerConfig {
         dynamics.drag_coefficient = drag_coefficient;
         dynamics.frontal_area = frontal_area;
         dynamics.rolling_resistance = rolling_resistance;
-        dynamics.downforce_coefficient = downforce_coefficient;
         dynamics.base_linear_damping = base_linear_damping;
         dynamics.linear_damping_per_speed = linear_damping_per_speed;
         dynamics.base_angular_damping = base_angular_damping;
         dynamics.angular_damping_per_speed = angular_damping_per_speed;
     }
 
-    pub fn set_downforce_points(
+    pub fn set_downforce(
         &mut self,
+        max_force: Real,
+        exponent: Real,
         positions: js_sys::Float32Array,
-        coefficients: js_sys::Float32Array,
-    ) {
+        max_forces: js_sys::Float32Array,
+    ) -> Result<(), JsValue> {
         let positions = positions.to_vec();
-        let coefficients = coefficients.to_vec();
-        if positions.len() != coefficients.len() * 3 {
-            self.config.dynamics.downforce_points.clear();
-            return;
+        let max_forces = max_forces.to_vec();
+        if !max_force.is_finite()
+            || max_force < 0.0
+            || !exponent.is_finite()
+            || exponent <= 0.0
+            || positions.len() != max_forces.len() * 3
+            || positions.iter().any(|v| !v.is_finite())
+            || max_forces.iter().any(|v| !v.is_finite() || *v < 0.0)
+        {
+            return Err(JsValue::from_str("Invalid downforce configuration"));
         }
-        self.config.dynamics.downforce_points = positions
+        let downforce = &mut self.config.dynamics.downforce;
+        downforce.max_force = max_force;
+        downforce.exponent = exponent;
+        downforce.points = positions
             .chunks_exact(3)
-            .zip(coefficients)
-            .map(|(position, coefficient)| VehicleDownforcePoint {
+            .zip(max_forces)
+            .map(|(position, max_force)| VehicleDownforcePoint {
                 position: Vector::new(position[0], position[1], position[2]),
-                coefficient,
+                max_force,
             })
             .collect();
+        Ok(())
     }
 
     pub fn set_steering(
@@ -487,6 +497,50 @@ impl RawDynamicRayCastVehicleController {
         }
     }
 
+    pub fn wheel_center_offset_cs(&self, i: usize) -> Option<RawVector> {
+        self.controller
+            .wheels()
+            .get(i)
+            .map(|w| w.center_offset_cs().into())
+    }
+
+    pub fn set_wheel_center_offset_cs(
+        &mut self,
+        i: usize,
+        value: &RawVector,
+    ) -> Result<(), JsValue> {
+        let wheel = self
+            .controller
+            .wheels_mut()
+            .get_mut(i)
+            .ok_or_else(|| JsValue::from_str("Wheel index is out of range"))?;
+        wheel
+            .set_center_offset_cs(value.0)
+            .map_err(JsValue::from_str)
+    }
+
+    pub fn wheel_steering_axis_cs(&self, i: usize) -> Option<RawVector> {
+        self.controller
+            .wheels()
+            .get(i)
+            .map(|w| w.steering_axis_cs().into())
+    }
+
+    pub fn set_wheel_steering_axis_cs(
+        &mut self,
+        i: usize,
+        value: &RawVector,
+    ) -> Result<(), JsValue> {
+        let wheel = self
+            .controller
+            .wheels_mut()
+            .get_mut(i)
+            .ok_or_else(|| JsValue::from_str("Wheel index is out of range"))?;
+        wheel
+            .set_steering_axis_cs(value.0)
+            .map_err(JsValue::from_str)
+    }
+
     pub fn wheel_suspension_rest_length(&self, i: usize) -> Option<Real> {
         self.controller
             .wheels()
@@ -758,6 +812,40 @@ impl RawDynamicRayCastVehicleController {
 
     pub fn wheel_side_impulse(&self, i: usize) -> Option<Real> {
         self.controller.wheels().get(i).map(|w| w.side_impulse)
+    }
+
+    /// Packed world-space wheel debug sample; layout decoded by the TS wrapper.
+    pub fn wheel_debug_sample(&self, i: usize) -> Option<Vec<f32>> {
+        self.controller.wheels().get(i).map(|w| {
+            let ray = w.raycast_info();
+            let hit = w.debug.raw_hit.unwrap_or(w.debug.ray_end);
+            let mut values = vec![w.debug.status as f32];
+            for vector in [
+                ray.hard_point_ws.coords,
+                w.debug.ray_end.coords,
+                hit.coords,
+                w.center().coords,
+                w.axle(),
+                w.suspension(),
+                ray.contact_point_ws.coords,
+                ray.contact_normal_ws,
+                w.debug.forward_impulse,
+                w.debug.side_impulse,
+            ] {
+                values.extend(vector.iter().map(|value| *value as f32));
+            }
+            values.extend([
+                w.radius as f32,
+                w.rotation as f32,
+                ray.suspension_length as f32,
+                w.suspension_rest_length as f32,
+                w.max_suspension_travel as f32,
+                w.wheel_suspension_force
+                    .min(w.max_suspension_force)
+                    .max(0.0) as f32,
+            ]);
+            values
+        })
     }
 
     pub fn wheel_suspension_force(&self, i: usize) -> Option<Real> {

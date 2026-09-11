@@ -56,11 +56,13 @@ export interface VehicleDynamicsConfig {
     dragCoefficient: number;
     frontalArea: number;
     rollingResistance: number;
-    downforceCoefficient: number;
-    downforcePoints: Array<{
-        position: Vector;
-        coefficient: number;
-    }>;
+    downforce: {
+        /** Maximum center-of-mass force in newtons, used when points is empty. */
+        maxForce: number;
+        /** Positive exponent: 1 = linear, 2 = quadratic. Force caps at gearing-derived top speed. */
+        exponent: number;
+        points: Array<{position: Vector; maxForce: number}>;
+    };
     baseLinearDamping: number;
     linearDampingPerSpeed: number;
     baseAngularDamping: number;
@@ -189,6 +191,29 @@ export class DynamicRayCastVehicleController {
         queries: QueryPipeline,
         config: VehicleControllerConfig,
     ) {
+        const downforce = config.dynamics.downforce;
+        const finiteScalar = (value: number) =>
+            Number.isFinite(Math.fround(value));
+        if (
+            !finiteScalar(downforce.maxForce) ||
+            downforce.maxForce < 0 ||
+            !finiteScalar(downforce.exponent) ||
+            Math.fround(downforce.exponent) <= 0 ||
+            downforce.points.some(
+                (point) =>
+                    !finiteScalar(point.maxForce) ||
+                    point.maxForce < 0 ||
+                    ![
+                        point.position.x,
+                        point.position.y,
+                        point.position.z,
+                    ].every(finiteScalar),
+            )
+        ) {
+            throw new RangeError(
+                "Downforce requires finite positions, nonnegative forces, and a positive exponent.",
+            );
+        }
         const rawConfig = new RawVehicleControllerConfig();
         const engine = config.engine;
         rawConfig.set_engine(
@@ -241,28 +266,25 @@ export class DynamicRayCastVehicleController {
             dynamics.dragCoefficient,
             dynamics.frontalArea,
             dynamics.rollingResistance,
-            dynamics.downforceCoefficient,
             dynamics.baseLinearDamping,
             dynamics.linearDampingPerSpeed,
             dynamics.baseAngularDamping,
             dynamics.angularDampingPerSpeed,
         );
-        const downforcePointPositions = new Float32Array(
-            dynamics.downforcePoints.length * 3,
-        );
-        const downforcePointCoefficients = new Float32Array(
-            dynamics.downforcePoints.length,
-        );
-        dynamics.downforcePoints.forEach((point, index) => {
-            const positionOffset = index * 3;
-            downforcePointPositions[positionOffset] = point.position.x;
-            downforcePointPositions[positionOffset + 1] = point.position.y;
-            downforcePointPositions[positionOffset + 2] = point.position.z;
-            downforcePointCoefficients[index] = point.coefficient;
+        const positions = new Float32Array(downforce.points.length * 3);
+        const maxForces = new Float32Array(downforce.points.length);
+        downforce.points.forEach((point, index) => {
+            positions.set(
+                [point.position.x, point.position.y, point.position.z],
+                index * 3,
+            );
+            maxForces[index] = point.maxForce;
         });
-        rawConfig.set_downforce_points(
-            downforcePointPositions,
-            downforcePointCoefficients,
+        rawConfig.set_downforce(
+            downforce.maxForce,
+            downforce.exponent,
+            positions,
+            maxForces,
         );
         const steering = config.steering;
         rawConfig.set_steering(
@@ -541,6 +563,36 @@ export class DynamicRayCastVehicleController {
         let rawValue = VectorOps.intoRaw(value);
         this.raw.set_wheel_chassis_connection_point_cs(i, rawValue);
         rawValue.free();
+    }
+
+    /** The zero-steering pivot-to-tire-center offset in chassis coordinates, excluding spring travel. */
+    public wheelCenterOffsetCs(i: number): Vector | null {
+        return VectorOps.fromRaw(this.raw.wheel_center_offset_cs(i));
+    }
+
+    /** Sets a finite neutral tire-center offset without moving the fixed suspension mount. */
+    public setWheelCenterOffsetCs(i: number, value: Vector) {
+        let rawValue = VectorOps.intoRaw(value);
+        try {
+            this.raw.set_wheel_center_offset_cs(i, rawValue);
+        } finally {
+            rawValue.free();
+        }
+    }
+
+    /** The steering axis in chassis coordinates; defaults to the opposite suspension direction. */
+    public wheelSteeringAxisCs(i: number): Vector | null {
+        return VectorOps.fromRaw(this.raw.wheel_steering_axis_cs(i));
+    }
+
+    /** Sets and normalizes a finite, non-zero steering axis, separate from the axle and suspension. */
+    public setWheelSteeringAxisCs(i: number, value: Vector) {
+        let rawValue = VectorOps.intoRaw(value);
+        try {
+            this.raw.set_wheel_steering_axis_cs(i, rawValue);
+        } finally {
+            rawValue.free();
+        }
     }
 
     /**
@@ -969,6 +1021,39 @@ export class DynamicRayCastVehicleController {
      */
     public wheelSideImpulse(i: number): number | null {
         return this.raw.wheel_side_impulse(i);
+    }
+
+    /** Last physics query and final tire impulses in world coordinates.
+     * Status: 0 uninitialized, 1 miss, 2 rejected angle, 3 rejected travel, 4 contact.
+     * Impulses are N.s; divide by the updateVehicle timestep for average force.
+     */
+    public wheelDebugSample(i: number) {
+        const data = this.raw.wheel_debug_sample(i);
+        if (!data) return null;
+        const vector = (offset: number) => ({
+            x: data[offset],
+            y: data[offset + 1],
+            z: data[offset + 2],
+        });
+        return {
+            status: data[0],
+            rayStart: vector(1),
+            rayEnd: vector(4),
+            rawHit: vector(7),
+            center: vector(10),
+            axle: vector(13),
+            direction: vector(16),
+            contact: vector(19),
+            normal: vector(22),
+            forwardImpulse: vector(25),
+            sideImpulse: vector(28),
+            radius: data[31],
+            rotation: data[32],
+            length: data[33],
+            rest: data[34],
+            travel: data[35],
+            suspensionForce: data[36],
+        };
     }
 
     /**
