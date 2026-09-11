@@ -512,11 +512,12 @@ export class DynamicRayCastVehicleController {
     /**
      * Adds a new wheel attached to this vehicle.
      * @param chassisConnectionCs  - The position of the wheel relative to the chassis.
-     * @param directionCs - The direction of the wheel’s suspension, relative to the chassis. The ray-casting will
+     * @param directionCs - The direction of the wheel’s suspension, relative to the chassis. The cylinder sweep will
      *                      happen following this direction to detect the ground.
      * @param axleCs - The wheel’s axle axis, relative to the chassis.
      * @param suspensionRestLength - The rest length of the wheel’s suspension spring.
      * @param radius - The wheel’s radius.
+     * @param width - Full tire width along the rolling axle, in metres.
      */
     public addWheel(
         chassisConnectionCs: Vector,
@@ -524,8 +525,11 @@ export class DynamicRayCastVehicleController {
         axleCs: Vector,
         suspensionRestLength: number,
         radius: number,
+        width: number,
         role: VehicleWheelRole,
     ) {
+        if (!Number.isFinite(width) || width <= 0)
+            throw new RangeError("Wheel width must be finite and positive.");
         let rawChassisConnectionCs = VectorOps.intoRaw(chassisConnectionCs);
         let rawDirectionCs = VectorOps.intoRaw(directionCs);
         let rawAxleCs = VectorOps.intoRaw(axleCs);
@@ -536,6 +540,7 @@ export class DynamicRayCastVehicleController {
             rawAxleCs,
             suspensionRestLength,
             radius,
+            width,
             role.axle === "front" ? 0 : 1,
             role.driven,
             role.steered,
@@ -638,6 +643,10 @@ export class DynamicRayCastVehicleController {
     /**
      * The i-th wheel’s radius.
      */
+    public wheelWidth(i: number): number | null {
+        return this.raw.wheel_width(i);
+    }
+
     public wheelRadius(i: number): number | null {
         return this.raw.wheel_radius(i);
     }
@@ -758,7 +767,7 @@ export class DynamicRayCastVehicleController {
     /**
      * The direction of the i-th wheel’s suspension, relative to the chassis.
      *
-     * The ray-casting will happen following this direction to detect the ground.
+     * The cylinder sweep will happen following this direction to detect the ground.
      */
     public wheelDirectionCs(i: number): Vector | null {
         return VectorOps.fromRaw(this.raw.wheel_direction_cs(i));
@@ -767,7 +776,7 @@ export class DynamicRayCastVehicleController {
     /**
      * Sets the direction of the i-th wheel’s suspension, relative to the chassis.
      *
-     * The ray-casting will happen following this direction to detect the ground.
+     * The cylinder sweep will happen following this direction to detect the ground.
      */
     public setWheelDirectionCs(i: number, value: Vector) {
         let rawValue = VectorOps.intoRaw(value);
@@ -1065,6 +1074,7 @@ export class DynamicRayCastVehicleController {
             rest: data[34],
             travel: data[35],
             suspensionForce: data[36],
+            width: data[37],
         };
     }
 

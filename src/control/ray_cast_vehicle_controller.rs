@@ -427,6 +427,7 @@ impl RawDynamicRayCastVehicleController {
         axle_cs: &RawVector,
         suspension_rest_length: Real,
         radius: Real,
+        width: Real,
         axle: u32,
         driven: bool,
         steered: bool,
@@ -442,6 +443,7 @@ impl RawDynamicRayCastVehicleController {
             axle_cs.0,
             suspension_rest_length,
             radius,
+            width,
             &WheelTuning::default(),
             WheelRole::new(axle, driven, steered),
         );
@@ -573,6 +575,10 @@ impl RawDynamicRayCastVehicleController {
         if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
             wheel.max_suspension_travel = value;
         }
+    }
+
+    pub fn wheel_width(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|wheel| wheel.width)
     }
 
     pub fn wheel_radius(&self, i: usize) -> Option<Real> {
@@ -853,6 +859,7 @@ impl RawDynamicRayCastVehicleController {
                 w.wheel_suspension_force
                     .min(w.max_suspension_force)
                     .max(0.0) as f32,
+                w.width as f32,
             ]);
             values
         })
