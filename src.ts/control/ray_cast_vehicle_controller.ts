@@ -61,6 +61,8 @@ export interface VehicleDynamicsConfig {
         maxForce: number;
         /** Positive exponent: 1 = linear, 2 = quadratic. Force caps at gearing-derived top speed. */
         exponent: number;
+        /** Additional longitudinal drag per newton of generated downforce. */
+        dragPerDownforce: number;
         points: Array<{position: Vector; maxForce: number}>;
     };
     baseLinearDamping: number;
@@ -150,6 +152,10 @@ export interface VehicleState {
     gearShiftRejectedSequence: number;
     currentGear: number;
     reverseDirection: boolean;
+    /** Driver throttle after direction resolution, before engine overrides. */
+    resolvedThrottle: number;
+    /** Service-brake input after direction resolution, before wheel brake bias. */
+    resolvedBrake: number;
     vehicleSpeed: number;
     drivenWheelSpeed: number;
     steeringAngle: number;
@@ -199,6 +205,9 @@ export class DynamicRayCastVehicleController {
             downforce.maxForce < 0 ||
             !finiteScalar(downforce.exponent) ||
             Math.fround(downforce.exponent) <= 0 ||
+            typeof downforce.dragPerDownforce !== "number" ||
+            !finiteScalar(downforce.dragPerDownforce) ||
+            downforce.dragPerDownforce < 0 ||
             downforce.points.some(
                 (point) =>
                     !finiteScalar(point.maxForce) ||
@@ -211,7 +220,7 @@ export class DynamicRayCastVehicleController {
             )
         ) {
             throw new RangeError(
-                "Downforce requires finite positions, nonnegative forces, and a positive exponent.",
+                "Downforce requires finite positions, nonnegative forces and drag ratio, and a positive exponent.",
             );
         }
         const rawConfig = new RawVehicleControllerConfig();
@@ -283,6 +292,7 @@ export class DynamicRayCastVehicleController {
         rawConfig.set_downforce(
             downforce.maxForce,
             downforce.exponent,
+            downforce.dragPerDownforce,
             positions,
             maxForces,
         );
@@ -424,6 +434,8 @@ export class DynamicRayCastVehicleController {
             gearShiftRejectedSequence: this.raw.gear_shift_rejected_sequence(),
             currentGear: this.raw.current_gear(),
             reverseDirection: this.raw.reverse_direction(),
+            resolvedThrottle: this.raw.resolved_throttle(),
+            resolvedBrake: this.raw.resolved_brake(),
             vehicleSpeed: this.raw.vehicle_speed(),
             drivenWheelSpeed: this.raw.driven_wheel_speed(),
             steeringAngle: this.raw.steering_angle(),

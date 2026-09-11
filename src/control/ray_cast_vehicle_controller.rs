@@ -189,6 +189,7 @@ impl RawVehicleControllerConfig {
         &mut self,
         max_force: Real,
         exponent: Real,
+        drag_per_downforce: Real,
         positions: js_sys::Float32Array,
         max_forces: js_sys::Float32Array,
     ) -> Result<(), JsValue> {
@@ -198,6 +199,8 @@ impl RawVehicleControllerConfig {
             || max_force < 0.0
             || !exponent.is_finite()
             || exponent <= 0.0
+            || !drag_per_downforce.is_finite()
+            || drag_per_downforce < 0.0
             || positions.len() != max_forces.len() * 3
             || positions.iter().any(|v| !v.is_finite())
             || max_forces.iter().any(|v| !v.is_finite() || *v < 0.0)
@@ -207,6 +210,7 @@ impl RawVehicleControllerConfig {
         let downforce = &mut self.config.dynamics.downforce;
         downforce.max_force = max_force;
         downforce.exponent = exponent;
+        downforce.drag_per_downforce = drag_per_downforce;
         downforce.points = positions
             .chunks_exact(3)
             .zip(max_forces)
@@ -337,6 +341,12 @@ impl RawDynamicRayCastVehicleController {
     }
     pub fn reverse_direction(&self) -> bool {
         self.controller.state().reverse_direction
+    }
+    pub fn resolved_throttle(&self) -> Real {
+        self.controller.state().resolved_throttle
+    }
+    pub fn resolved_brake(&self) -> Real {
+        self.controller.state().resolved_brake
     }
     pub fn vehicle_speed(&self) -> Real {
         self.controller.state().vehicle_speed
