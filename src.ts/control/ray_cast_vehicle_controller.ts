@@ -417,6 +417,16 @@ export class DynamicRayCastVehicleController {
         this.raw.set_counter_steer_assist(strength);
     }
 
+    /** Fraction of service braking assigned to the front axle. */
+    get brakeBias(): number {
+        return this.raw.brake_bias();
+    }
+
+    /** Sets the fraction of service braking assigned to the front axle (`0` to `1`). */
+    set brakeBias(bias: number) {
+        this.raw.set_brake_bias(bias);
+    }
+
     /** Current engine, transmission, driver-assistance, and feedback state. */
     public state(): VehicleState {
         return this.currentState;

@@ -312,6 +312,14 @@ impl RawDynamicRayCastVehicleController {
         self.controller.set_counter_steer_assist(strength);
     }
 
+    pub fn brake_bias(&self) -> Real {
+        self.controller.brake_bias()
+    }
+
+    pub fn set_brake_bias(&mut self, bias: Real) {
+        self.controller.set_brake_bias(bias);
+    }
+
     pub fn engine_rpm(&self) -> Real {
         self.controller.state().engine_rpm
     }
