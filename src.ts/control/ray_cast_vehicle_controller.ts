@@ -85,7 +85,17 @@ export interface VehicleSteeringConfig {
     counterSteerAssist: number;
 }
 
+/** Normalized axle lock strengths and AWD rear torque fraction (0..1). */
+export interface VehicleDifferentialConfig {
+    frontAccelLock: number;
+    frontDecelLock: number;
+    rearAccelLock: number;
+    rearDecelLock: number;
+    centerRearBias: number;
+}
+
 export interface VehicleControllerConfig {
+    differential: VehicleDifferentialConfig;
     engine: VehicleEngineConfig;
     transmission: VehicleTransmissionConfig;
     turbo: VehicleTurboConfig;
@@ -223,7 +233,36 @@ export class DynamicRayCastVehicleController {
                 "Downforce requires finite positions, nonnegative forces and drag ratio, and a positive exponent.",
             );
         }
+        const differential = config.differential;
+        const differentialValues = differential && [
+            differential.frontAccelLock,
+            differential.frontDecelLock,
+            differential.rearAccelLock,
+            differential.rearDecelLock,
+            differential.centerRearBias,
+        ];
+        if (
+            !differentialValues ||
+            !differentialValues.every(
+                (value) =>
+                    typeof value === "number" &&
+                    Number.isFinite(value) &&
+                    value >= 0 &&
+                    value <= 1,
+            )
+        ) {
+            throw new RangeError(
+                "Differential settings must be finite in 0..1.",
+            );
+        }
         const rawConfig = new RawVehicleControllerConfig();
+        rawConfig.set_differential(
+            differential.frontAccelLock,
+            differential.frontDecelLock,
+            differential.rearAccelLock,
+            differential.rearDecelLock,
+            differential.centerRearBias,
+        );
         const engine = config.engine;
         rawConfig.set_engine(
             engine.horsepower,

@@ -101,6 +101,30 @@ impl RawVehicleControllerConfig {
         engine.gear_force_exponent = gear_force_exponent;
     }
 
+    pub fn set_differential(
+        &mut self,
+        front_accel_lock: Real,
+        front_decel_lock: Real,
+        rear_accel_lock: Real,
+        rear_decel_lock: Real,
+        center_rear_bias: Real,
+    ) -> Result<(), JsValue> {
+        let differential = engine::control::VehicleDifferentialConfig {
+            front_accel_lock,
+            front_decel_lock,
+            rear_accel_lock,
+            rear_decel_lock,
+            center_rear_bias,
+        };
+        if !differential.is_valid() {
+            return Err(JsValue::from_str(
+                "Differential settings must be finite in 0..=1",
+            ));
+        }
+        self.config.differential = differential;
+        Ok(())
+    }
+
     pub fn set_torque_curve(&mut self, rpms: js_sys::Float32Array, torques: js_sys::Float32Array) {
         let rpms = rpms.to_vec();
         let torques = torques.to_vec();
