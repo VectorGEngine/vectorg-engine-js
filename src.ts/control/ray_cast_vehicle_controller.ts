@@ -85,13 +85,13 @@ export interface VehicleSteeringConfig {
     counterSteerAssist: number;
 }
 
-/** Normalized axle lock strengths and AWD rear torque fraction (0..1). */
+/** Normalized axle lock strengths and AWD front torque fraction (0..1). */
 export interface VehicleDifferentialConfig {
     frontAccelLock: number;
     frontDecelLock: number;
     rearAccelLock: number;
     rearDecelLock: number;
-    centerRearBias: number;
+    centerBalance: number;
 }
 
 export interface VehicleControllerConfig {
@@ -239,7 +239,7 @@ export class DynamicRayCastVehicleController {
             differential.frontDecelLock,
             differential.rearAccelLock,
             differential.rearDecelLock,
-            differential.centerRearBias,
+            differential.centerBalance,
         ];
         if (
             !differentialValues ||
@@ -261,7 +261,7 @@ export class DynamicRayCastVehicleController {
             differential.frontDecelLock,
             differential.rearAccelLock,
             differential.rearDecelLock,
-            differential.centerRearBias,
+            differential.centerBalance,
         );
         const engine = config.engine;
         rawConfig.set_engine(
