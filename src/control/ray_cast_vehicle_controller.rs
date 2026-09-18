@@ -108,6 +108,7 @@ impl RawVehicleControllerConfig {
         rear_accel_lock: Real,
         rear_decel_lock: Real,
         center_balance: Real,
+        center_lock: Real,
     ) -> Result<(), JsValue> {
         let differential = engine::control::VehicleDifferentialConfig {
             front_accel_lock,
@@ -115,6 +116,7 @@ impl RawVehicleControllerConfig {
             rear_accel_lock,
             rear_decel_lock,
             center_balance,
+            center_lock,
         };
         if !differential.is_valid() {
             return Err(JsValue::from_str(

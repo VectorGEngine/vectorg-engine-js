@@ -85,13 +85,18 @@ export interface VehicleSteeringConfig {
     counterSteerAssist: number;
 }
 
-/** Normalized axle lock strengths and AWD front torque fraction (0..1). */
+/** Normalized axle and center lock strengths and AWD front torque fraction (0..1). */
 export interface VehicleDifferentialConfig {
     frontAccelLock: number;
     frontDecelLock: number;
     rearAccelLock: number;
     rearDecelLock: number;
     centerBalance: number;
+    /**
+     * AWD front/rear coupling: `0` = open center, `1` = rigid shaft. Ignored
+     * for FWD/RWD. The handbrake releases it to disconnect the rear drive.
+     */
+    centerLock: number;
 }
 
 export interface VehicleControllerConfig {
@@ -240,6 +245,7 @@ export class DynamicRayCastVehicleController {
             differential.rearAccelLock,
             differential.rearDecelLock,
             differential.centerBalance,
+            differential.centerLock,
         ];
         if (
             !differentialValues ||
@@ -262,6 +268,7 @@ export class DynamicRayCastVehicleController {
             differential.rearAccelLock,
             differential.rearDecelLock,
             differential.centerBalance,
+            differential.centerLock,
         );
         const engine = config.engine;
         rawConfig.set_engine(
