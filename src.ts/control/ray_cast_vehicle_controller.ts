@@ -994,28 +994,47 @@ export class DynamicRayCastVehicleController {
         this.raw.set_wheel_tire_type(i, tireType);
     }
 
-    /** Register fallback peak and sliding friction coefficients for a tire type. */
+    /**
+     * Register fallback peak and sliding friction coefficients for a tire type,
+     * with the longitudinal (drive/brake) and lateral (cornering) grip
+     * multipliers of its friction envelope.
+     */
     public addTireType(
         tireType: string,
         peakGrip: number,
         slidingGrip: number,
+        longitudinalGrip: number,
+        lateralGrip: number,
     ): DynamicRayCastVehicleController {
-        this.raw.add_tire_type(tireType, peakGrip, slidingGrip);
+        this.raw.add_tire_type(
+            tireType,
+            peakGrip,
+            slidingGrip,
+            longitudinalGrip,
+            lateralGrip,
+        );
         return this;
     }
 
-    /** Override the peak/sliding grip pair for this tire on a specific surface. */
+    /**
+     * Override the peak/sliding grip and longitudinal/lateral envelope
+     * multipliers for this tire on a specific surface.
+     */
     public addSurfaceToTireType(
         tireType: string,
         surface: string,
         peakGrip: number,
         slidingGrip: number,
+        longitudinalGrip: number,
+        lateralGrip: number,
     ): DynamicRayCastVehicleController {
         this.raw.add_surface_to_tire_type(
             tireType,
             surface,
             peakGrip,
             slidingGrip,
+            longitudinalGrip,
+            lateralGrip,
         );
         return this;
     }

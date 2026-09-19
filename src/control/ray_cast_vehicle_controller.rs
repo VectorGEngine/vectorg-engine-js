@@ -4,7 +4,7 @@ use crate::math::RawVector;
 use crate::pipeline::RawQueryPipeline;
 use crate::utils::{self, FlatHandle};
 use engine::control::{
-    DynamicRayCastVehicleController, VehicleControllerConfig, VehicleDownforcePoint,
+    DynamicRayCastVehicleController, TireFriction, VehicleControllerConfig, VehicleDownforcePoint,
     VehicleEngineState, VehicleInput, VehicleShiftOutcome, WheelAxle, WheelRole, WheelTuning,
 };
 use engine::math::{Real, Vector};
@@ -15,14 +15,28 @@ fn traction_control_strength(value: Real) -> Option<Real> {
     value.is_finite().then(|| value.clamp(0.0, 1.0))
 }
 
-fn validate_tire_grip(peak: f32, sliding: f32) -> Result<(), JsValue> {
-    if peak.is_finite() && sliding.is_finite() && peak >= 0.0 && sliding >= 0.0 && sliding <= peak {
-        Ok(())
-    } else {
-        Err(JsValue::from_str(
+fn validate_tire_grip(
+    peak: f32,
+    sliding: f32,
+    longitudinal: f32,
+    lateral: f32,
+) -> Result<(), JsValue> {
+    if !(peak.is_finite()
+        && sliding.is_finite()
+        && peak >= 0.0
+        && sliding >= 0.0
+        && sliding <= peak)
+    {
+        return Err(JsValue::from_str(
             "Tire grip must be finite with 0 <= slidingGrip <= peakGrip",
-        ))
+        ));
     }
+    if !TireFriction::valid_shape(longitudinal, lateral) {
+        return Err(JsValue::from_str(
+            "Tire grip axes must be positive with neither longitudinalGrip nor lateralGrip above twice the other",
+        ));
+    }
+    Ok(())
 }
 
 #[wasm_bindgen]
@@ -790,9 +804,12 @@ impl RawDynamicRayCastVehicleController {
         tire_type: &str,
         peak: f32,
         sliding: f32,
+        longitudinal: f32,
+        lateral: f32,
     ) -> Result<(), JsValue> {
-        validate_tire_grip(peak, sliding)?;
-        self.controller.add_tire_type(tire_type, peak, sliding);
+        validate_tire_grip(peak, sliding, longitudinal, lateral)?;
+        self.controller
+            .add_tire_type(tire_type, peak, sliding, longitudinal, lateral);
         Ok(())
     }
 
@@ -802,10 +819,18 @@ impl RawDynamicRayCastVehicleController {
         surface: &str,
         peak: f32,
         sliding: f32,
+        longitudinal: f32,
+        lateral: f32,
     ) -> Result<(), JsValue> {
-        validate_tire_grip(peak, sliding)?;
-        self.controller
-            .add_surface_to_tire_type(tire_type, surface, peak, sliding);
+        validate_tire_grip(peak, sliding, longitudinal, lateral)?;
+        self.controller.add_surface_to_tire_type(
+            tire_type,
+            surface,
+            peak,
+            sliding,
+            longitudinal,
+            lateral,
+        );
         Ok(())
     }
 
