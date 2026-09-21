@@ -852,6 +852,14 @@ impl RawDynamicRayCastVehicleController {
         self.controller.wheels().get(i).map(|w| w.delta_rotation)
     }
 
+    pub fn wheel_brake_slip(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.brake_slip())
+    }
+
+    pub fn wheel_power_slip(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.power_slip())
+    }
+
     pub fn wheel_skid_info(&self, i: usize) -> Option<Real> {
         self.controller.wheels().get(i).map(|w| w.skid_info)
     }

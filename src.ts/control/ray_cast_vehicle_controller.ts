@@ -1058,6 +1058,22 @@ export class DynamicRayCastVehicleController {
     }
 
     /**
+     * Normalized longitudinal tire slip while braking. Zero means rolling grip;
+     * one means the tire has reached the model's fully sliding speed.
+     */
+    public wheelBrakeSlip(i: number): number | null {
+        return this.raw.wheel_brake_slip(i);
+    }
+
+    /**
+     * Normalized longitudinal overspeed for a driven tire under power. Zero
+     * means rolling grip; one means fully developed power slip.
+     */
+    public wheelPowerSlip(i: number): number | null {
+        return this.raw.wheel_power_slip(i);
+    }
+
+    /**
      *  The i-th wheel’s skid info.
      *
      *  Weighted contact-demand ratio for feedback and effects, between 0.0 and 1.0.
