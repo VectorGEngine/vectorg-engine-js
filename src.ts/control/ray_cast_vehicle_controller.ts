@@ -683,14 +683,16 @@ export class DynamicRayCastVehicleController {
     }
 
     /**
-     * The maximum distance the i-th wheel suspension can travel before and after its resting length.
+     * The maximum compression travel of the i-th wheel suspension from its rest length.
+     * The suspension never extends past its rest length.
      */
     public wheelMaxSuspensionTravel(i: number): number | null {
         return this.raw.wheel_max_suspension_travel(i);
     }
 
     /**
-     * Sets the maximum distance the i-th wheel suspension can travel before and after its resting length.
+     * Sets the maximum compression travel of the i-th wheel suspension from its rest length.
+     * The suspension never extends past its rest length.
      */
     public setWheelMaxSuspensionTravel(i: number, value: number) {
         this.raw.set_wheel_max_suspension_travel(i, value);
