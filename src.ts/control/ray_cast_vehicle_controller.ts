@@ -997,6 +997,53 @@ export class DynamicRayCastVehicleController {
     }
 
     /**
+     * Replaces the braking, stability, aerodynamic and damping parameters on a
+     * running vehicle.
+     *
+     * Fitting different tires changes how much the car drags as well as how much
+     * it grips, and a car in the pits cannot be rebuilt without losing the wheel,
+     * clutch and assist state it is carrying. Downforce keeps its own setter.
+     */
+    public setDynamics(dynamics: VehicleDynamicsConfig) {
+        this.raw.set_dynamics(
+            dynamics.brakeBias,
+            dynamics.absStrength,
+            dynamics.tractionControlStrength,
+            dynamics.escStrength,
+            dynamics.frontAntiRollBarStiffness,
+            dynamics.rearAntiRollBarStiffness,
+            dynamics.dragCoefficient,
+            dynamics.frontalArea,
+            dynamics.rollingResistance,
+            dynamics.baseLinearDamping,
+            dynamics.linearDampingPerSpeed,
+            dynamics.baseAngularDamping,
+            dynamics.angularDampingPerSpeed,
+        );
+    }
+
+    /**
+     * The i-th wheel’s inflation pressure, in bar.
+     */
+    public wheelPressure(i: number): number | null {
+        return this.raw.wheel_pressure(i);
+    }
+
+    /**
+     * Sets the i-th wheel’s inflation pressure, in bar.
+     *
+     * Pressure scales grip by how well it matches the load the wheel is
+     * carrying: a tire holds its ideal contact patch when pressure rises in step
+     * with load, so grip peaks where the two match and falls away either side.
+     * The reference pressure of 2.0 bar is grip-neutral at every load.
+     *
+     * Non-finite and non-positive values are ignored.
+     */
+    public setWheelPressure(i: number, pressure: number) {
+        this.raw.set_wheel_pressure(i, pressure);
+    }
+
+    /**
      * Register fallback peak and sliding friction coefficients for a tire type,
      * with the longitudinal (drive/brake) and lateral (cornering) grip
      * multipliers of its friction envelope.

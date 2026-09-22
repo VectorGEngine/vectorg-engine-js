@@ -799,6 +799,49 @@ impl RawDynamicRayCastVehicleController {
         self.controller.set_wheel_tire_type(i, tire_type)
     }
 
+    #[allow(clippy::too_many_arguments)]
+    pub fn set_dynamics(
+        &mut self,
+        brake_bias: Real,
+        abs_strength: Real,
+        traction_control_strength: Real,
+        esc_strength: Real,
+        front_anti_roll_bar_stiffness: Real,
+        rear_anti_roll_bar_stiffness: Real,
+        drag_coefficient: Real,
+        frontal_area: Real,
+        rolling_resistance: Real,
+        base_linear_damping: Real,
+        linear_damping_per_speed: Real,
+        base_angular_damping: Real,
+        angular_damping_per_speed: Real,
+    ) {
+        // Downforce is left alone: it has its own setter and its own shape.
+        let mut dynamics = self.controller.dynamics().clone();
+        dynamics.brake_bias = brake_bias;
+        dynamics.abs_strength = abs_strength;
+        dynamics.traction_control_strength = traction_control_strength;
+        dynamics.esc_strength = esc_strength;
+        dynamics.front_anti_roll_bar_stiffness = front_anti_roll_bar_stiffness;
+        dynamics.rear_anti_roll_bar_stiffness = rear_anti_roll_bar_stiffness;
+        dynamics.drag_coefficient = drag_coefficient;
+        dynamics.frontal_area = frontal_area;
+        dynamics.rolling_resistance = rolling_resistance;
+        dynamics.base_linear_damping = base_linear_damping;
+        dynamics.linear_damping_per_speed = linear_damping_per_speed;
+        dynamics.base_angular_damping = base_angular_damping;
+        dynamics.angular_damping_per_speed = angular_damping_per_speed;
+        self.controller.set_dynamics(dynamics);
+    }
+
+    pub fn wheel_pressure(&self, i: usize) -> Option<Real> {
+        self.controller.wheel_pressure(i)
+    }
+
+    pub fn set_wheel_pressure(&mut self, i: usize, pressure: Real) {
+        self.controller.set_wheel_pressure(i, pressure)
+    }
+
     pub fn add_tire_type(
         &mut self,
         tire_type: &str,
