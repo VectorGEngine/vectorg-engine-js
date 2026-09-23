@@ -204,6 +204,10 @@ export class DynamicRayCastVehicleController {
     private queries: QueryPipeline;
     private _chassis: RigidBody;
     private currentState: VehicleState;
+    /** The filter the last updateVehicle cast with; the end of the step reuses it. */
+    private castFilterFlags?: QueryFilterFlags;
+    private castFilterGroups?: InteractionGroups;
+    private castFilterPredicate?: (collider: Collider) => boolean;
 
     constructor(
         chassis: RigidBody,
@@ -391,6 +395,11 @@ export class DynamicRayCastVehicleController {
         filterPredicate?: (collider: Collider) => boolean,
     ) {
         const rawGravity = VectorOps.intoRaw(gravity);
+        // The end of the step casts again, and must exclude exactly what this cast
+        // excluded or it can find a collider the suspension is meant to ignore.
+        this.castFilterFlags = filterFlags;
+        this.castFilterGroups = filterGroups;
+        this.castFilterPredicate = filterPredicate;
         this.raw.update_vehicle(
             dt,
             rawGravity,
@@ -405,9 +414,26 @@ export class DynamicRayCastVehicleController {
         this.currentState = this.readState();
     }
 
-    /** @internal Collects wheel and assist state after the world solver completes. */
+    /**
+     * @internal Closes the step, once the solver has moved everything.
+     *
+     * Restores chassis gravity, collects wheel and assist state, and re-measures the
+     * wheels. That second measurement matters: the suspension was cast from the pose
+     * the chassis had at the start of the step, and a reader afterwards - a renderer
+     * posing the tires, telemetry recording them - would otherwise be holding a length
+     * belonging to a pose the car has already left, which on a landing places the tire
+     * inside the road until the motion settles. It applies no force, and the next
+     * step's cast starts from this same pose, so the simulation is unchanged.
+     */
     public finishVehicleUpdate() {
-        this.raw.finish_vehicle_update(this.bodies.raw);
+        this.raw.finish_vehicle_update(
+            this.bodies.raw,
+            this.colliders.raw,
+            this.queries.raw,
+            this.castFilterFlags,
+            this.castFilterGroups,
+            this.colliders.castClosure(this.castFilterPredicate),
+        );
         this.currentState = this.readState();
     }
 
@@ -1020,6 +1046,26 @@ export class DynamicRayCastVehicleController {
             dynamics.baseAngularDamping,
             dynamics.angularDampingPerSpeed,
         );
+    }
+
+    /**
+     * Distance from the i-th wheel’s centre to the road, along its suspension.
+     *
+     * A rigid wheel's own sweep stops the instant it touches, so it can only ever
+     * report its radius. This probe reaches past the wheel, so the road is known
+     * before the wheel arrives — which is what lets a tire squash in step with how
+     * far it is pressed in. Null when no road is within reach.
+     */
+    public wheelTreadDistance(i: number): number | null {
+        return this.raw.wheel_tread_distance(i);
+    }
+
+    /**
+     * The outward surface normal the tread probe found, or the wheel’s own up
+     * direction when it found nothing.
+     */
+    public wheelTreadNormal(i: number): Vector | null {
+        return VectorOps.fromRaw(this.raw.wheel_tread_normal(i));
     }
 
     /**

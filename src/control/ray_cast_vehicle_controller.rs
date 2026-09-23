@@ -533,8 +533,35 @@ impl RawDynamicRayCastVehicleController {
         });
     }
 
-    pub fn finish_vehicle_update(&mut self, bodies: &mut RawRigidBodySet) {
-        self.controller.finish_vehicle_update(&mut bodies.0);
+    /// Closes the step: restores chassis gravity and re-measures every wheel against
+    /// the pose the solver has just produced, so a renderer reading a wheel now is not
+    /// holding a suspension length from the pose the car started the step in.
+    pub fn finish_vehicle_update(
+        &mut self,
+        bodies: &mut RawRigidBodySet,
+        colliders: &RawColliderSet,
+        queries: &RawQueryPipeline,
+        filter_flags: u32,
+        filter_groups: Option<u32>,
+        filter_predicate: &js_sys::Function,
+    ) {
+        crate::utils::with_filter(filter_predicate, |predicate| {
+            let query_filter = QueryFilter {
+                flags: QueryFilterFlags::from_bits(filter_flags)
+                    .unwrap_or(QueryFilterFlags::empty()),
+                groups: filter_groups.map(crate::geometry::unpack_interaction_groups),
+                predicate,
+                exclude_rigid_body: Some(self.controller.chassis),
+                exclude_collider: None,
+            };
+
+            self.controller.finish_vehicle_update(
+                &mut bodies.0,
+                &colliders.0,
+                &queries.0,
+                query_filter,
+            );
+        });
     }
 
     /*
@@ -832,6 +859,14 @@ impl RawDynamicRayCastVehicleController {
         dynamics.base_angular_damping = base_angular_damping;
         dynamics.angular_damping_per_speed = angular_damping_per_speed;
         self.controller.set_dynamics(dynamics);
+    }
+
+    pub fn wheel_tread_distance(&self, i: usize) -> Option<Real> {
+        self.controller.wheel_tread_distance(i)
+    }
+
+    pub fn wheel_tread_normal(&self, i: usize) -> Option<RawVector> {
+        self.controller.wheel_tread_normal(i).map(Into::into)
     }
 
     pub fn wheel_pressure(&self, i: usize) -> Option<Real> {
