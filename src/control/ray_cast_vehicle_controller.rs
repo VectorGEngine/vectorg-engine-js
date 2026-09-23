@@ -640,16 +640,85 @@ impl RawDynamicRayCastVehicleController {
         }
     }
 
-    pub fn wheel_max_suspension_travel(&self, i: usize) -> Option<Real> {
+    pub fn wheel_suspension_bump_travel(&self, i: usize) -> Option<Real> {
         self.controller
             .wheels()
             .get(i)
-            .map(|w| w.max_suspension_travel)
+            .map(|w| w.suspension_bump_travel)
     }
-    pub fn set_wheel_max_suspension_travel(&mut self, i: usize, value: Real) {
+    pub fn set_wheel_suspension_bump_travel(&mut self, i: usize, value: Real) {
         if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
-            wheel.max_suspension_travel = value;
+            wheel.suspension_bump_travel = value;
         }
+    }
+
+    pub fn wheel_suspension_droop_travel(&self, i: usize) -> Option<Real> {
+        self.controller
+            .wheels()
+            .get(i)
+            .map(|w| w.suspension_droop_travel)
+    }
+    pub fn set_wheel_suspension_droop_travel(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.suspension_droop_travel = value;
+        }
+    }
+
+    pub fn wheel_suspension_preload(&self, i: usize) -> Option<Real> {
+        self.controller
+            .wheels()
+            .get(i)
+            .map(|w| w.suspension_preload)
+    }
+    pub fn set_wheel_suspension_preload(&mut self, i: usize, value: Real) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.suspension_preload = value;
+        }
+    }
+
+    pub fn wheel_suspension_pivot_cs(&self, i: usize) -> Option<RawVector> {
+        self.controller
+            .wheels()
+            .get(i)
+            .and_then(|w| w.suspension_pivot_cs())
+            .map(|pivot| pivot.coords.into())
+    }
+
+    pub fn wheel_suspension_arm_tilts(&self, i: usize) -> bool {
+        self.controller
+            .wheels()
+            .get(i)
+            .map_or(false, |w| w.suspension_arm_tilts())
+    }
+
+    pub fn set_wheel_suspension_arm(
+        &mut self,
+        i: usize,
+        pivot_cs: &RawVector,
+        reference_length: Real,
+        tilt: bool,
+    ) -> Result<(), JsValue> {
+        let wheel = self
+            .controller
+            .wheels_mut()
+            .get_mut(i)
+            .ok_or_else(|| JsValue::from_str("Wheel index is out of range"))?;
+        wheel
+            .set_suspension_arm(pivot_cs.0.into(), reference_length, tilt)
+            .map_err(JsValue::from_str)
+    }
+
+    pub fn clear_wheel_suspension_arm(&mut self, i: usize) {
+        if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
+            wheel.clear_suspension_arm();
+        }
+    }
+
+    pub fn wheel_is_on_bump_stop(&self, i: usize) -> bool {
+        self.controller
+            .wheels()
+            .get(i)
+            .map_or(false, |w| w.is_on_bump_stop())
     }
 
     pub fn wheel_width(&self, i: usize) -> Option<Real> {
@@ -1000,11 +1069,12 @@ impl RawDynamicRayCastVehicleController {
                 w.rotation as f32,
                 ray.suspension_length as f32,
                 w.suspension_rest_length as f32,
-                w.max_suspension_travel as f32,
+                w.suspension_bump_travel as f32,
                 w.wheel_suspension_force
                     .min(w.max_suspension_force)
                     .max(0.0) as f32,
                 w.width as f32,
+                w.suspension_droop_travel as f32,
             ]);
             values
         })

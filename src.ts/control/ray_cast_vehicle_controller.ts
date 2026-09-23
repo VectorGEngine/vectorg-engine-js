@@ -597,7 +597,7 @@ export class DynamicRayCastVehicleController {
      * @param directionCs - The direction of the wheel’s suspension, relative to the chassis. The cylinder sweep will
      *                      happen following this direction to detect the ground.
      * @param axleCs - The wheel’s axle axis, relative to the chassis.
-     * @param suspensionRestLength - The rest length of the wheel’s suspension spring.
+     * @param suspensionRestLength - The mount-to-joint length where the spring applies its preload.
      * @param radius - The wheel’s radius.
      * @param width - Full tire width along the rolling axle, in metres.
      */
@@ -695,33 +695,103 @@ export class DynamicRayCastVehicleController {
     }
 
     /**
-     * The rest length of the i-th wheel’s suspension spring.
+     * The mount-to-joint length where the i-th wheel's spring applies its preload.
      */
     public wheelSuspensionRestLength(i: number): number | null {
         return this.raw.wheel_suspension_rest_length(i);
     }
 
     /**
-     * Sets the rest length of the i-th wheel’s suspension spring.
+     * Sets the mount-to-joint length where the i-th wheel's spring applies its preload.
      */
     public setWheelSuspensionRestLength(i: number, value: number) {
         this.raw.set_wheel_suspension_rest_length(i, value);
     }
 
     /**
-     * The maximum compression travel of the i-th wheel suspension from its rest length.
-     * The suspension never extends past its rest length.
+     * Compression of the i-th wheel suspension from its rest length to the rigid bump stop.
      */
-    public wheelMaxSuspensionTravel(i: number): number | null {
-        return this.raw.wheel_max_suspension_travel(i);
+    public wheelSuspensionBumpTravel(i: number): number | null {
+        return this.raw.wheel_suspension_bump_travel(i);
     }
 
     /**
-     * Sets the maximum compression travel of the i-th wheel suspension from its rest length.
-     * The suspension never extends past its rest length.
+     * Sets the compression of the i-th wheel suspension from its rest length to the rigid bump stop.
      */
-    public setWheelMaxSuspensionTravel(i: number, value: number) {
-        this.raw.set_wheel_max_suspension_travel(i, value);
+    public setWheelSuspensionBumpTravel(i: number, value: number) {
+        this.raw.set_wheel_suspension_bump_travel(i, value);
+    }
+
+    /**
+     * Extension of the i-th wheel suspension from its rest length to full droop.
+     */
+    public wheelSuspensionDroopTravel(i: number): number | null {
+        return this.raw.wheel_suspension_droop_travel(i);
+    }
+
+    /**
+     * Sets the extension of the i-th wheel suspension from its rest length to full droop.
+     */
+    public setWheelSuspensionDroopTravel(i: number, value: number) {
+        this.raw.set_wheel_suspension_droop_travel(i, value);
+    }
+
+    /**
+     * Mass-normalized spring force of the i-th wheel at its rest length, in stiffness units.
+     */
+    public wheelSuspensionPreload(i: number): number | null {
+        return this.raw.wheel_suspension_preload(i);
+    }
+
+    /**
+     * Sets the mass-normalized spring force of the i-th wheel at its rest length.
+     */
+    public setWheelSuspensionPreload(i: number, value: number) {
+        this.raw.set_wheel_suspension_preload(i, value);
+    }
+
+    /** The pivot the i-th wheel's suspension arm swings about, in chassis coordinates. */
+    public wheelSuspensionPivotCs(i: number): Vector | null {
+        return VectorOps.fromRaw(this.raw.wheel_suspension_pivot_cs(i));
+    }
+
+    /** Whether the i-th wheel's hub tilts with its suspension arm. */
+    public wheelSuspensionArmTilts(i: number): boolean {
+        return this.raw.wheel_suspension_arm_tilts(i);
+    }
+
+    /**
+     * Swings the i-th wheel's joint on a rigid arm about `pivotCs` instead of sliding it
+     * along the suspension direction. `referenceLength` is the authored mount-to-joint
+     * length, where `tilt` leaves the hub unrotated. Set the travel limits first.
+     */
+    public setWheelSuspensionArm(
+        i: number,
+        pivotCs: Vector,
+        referenceLength: number,
+        tilt: boolean,
+    ) {
+        let rawValue = VectorOps.intoRaw(pivotCs);
+        try {
+            this.raw.set_wheel_suspension_arm(
+                i,
+                rawValue,
+                referenceLength,
+                tilt,
+            );
+        } finally {
+            rawValue.free();
+        }
+    }
+
+    /** Returns the i-th wheel to the straight suspension path. */
+    public clearWheelSuspensionArm(i: number) {
+        this.raw.clear_wheel_suspension_arm(i);
+    }
+
+    /** Whether the i-th wheel's last contact reached its rigid bump stop. */
+    public wheelIsOnBumpStop(i: number): boolean {
+        return this.raw.wheel_is_on_bump_stop(i);
     }
 
     /**
@@ -1258,9 +1328,10 @@ export class DynamicRayCastVehicleController {
             rotation: data[32],
             length: data[33],
             rest: data[34],
-            travel: data[35],
+            bumpTravel: data[35],
             suspensionForce: data[36],
             width: data[37],
+            droopTravel: data[38],
         };
     }
 
