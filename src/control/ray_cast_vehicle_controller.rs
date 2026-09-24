@@ -981,6 +981,21 @@ impl RawDynamicRayCastVehicleController {
         Ok(())
     }
 
+    pub fn set_surface_rolling_resistance(
+        &mut self,
+        surface: &str,
+        multiplier: f32,
+    ) -> Result<(), JsValue> {
+        if !multiplier.is_finite() || multiplier < 0.0 {
+            return Err(JsValue::from_str(
+                "Surface rolling resistance multiplier must be a finite non-negative number.",
+            ));
+        }
+        self.controller
+            .set_surface_rolling_resistance(surface, multiplier);
+        Ok(())
+    }
+
     /*
      * Getters only.
      */

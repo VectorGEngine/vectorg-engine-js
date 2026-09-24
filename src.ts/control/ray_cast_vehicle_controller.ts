@@ -1182,6 +1182,19 @@ export class DynamicRayCastVehicleController {
     }
 
     /**
+     * Scale the vehicle's rolling-resistance coefficient while its wheels rest
+     * on `surface`. Wheels on unlisted surfaces use a multiplier of 1; the
+     * chassis applies the mean multiplier of the wheels in contact.
+     */
+    public setSurfaceRollingResistance(
+        surface: string,
+        multiplier: number,
+    ): DynamicRayCastVehicleController {
+        this.raw.set_surface_rolling_resistance(surface, multiplier);
+        return this;
+    }
+
+    /**
      * Override the peak/sliding grip and longitudinal/lateral envelope
      * multipliers for this tire on a specific surface.
      */
