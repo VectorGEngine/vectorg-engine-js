@@ -1162,7 +1162,13 @@ export class DynamicRayCastVehicleController {
     /**
      * Register fallback peak and sliding friction coefficients for a tire type,
      * with the longitudinal (drive/brake) and lateral (cornering) grip
-     * multipliers of its friction envelope.
+     * multipliers of its friction envelope, and its cornering stiffness.
+     *
+     * `corneringStiffness` is the tire's lateral force per radian of slip angle
+     * as a multiple of wheel load, on every surface: a rolling tire then builds
+     * lateral force in proportion to its slip angle up to the friction limit,
+     * like a real tire, instead of cancelling all side speed it has grip for.
+     * Zero keeps the tire rigid. Negative or non-finite values are rejected.
      */
     public addTireType(
         tireType: string,
@@ -1170,6 +1176,7 @@ export class DynamicRayCastVehicleController {
         slidingGrip: number,
         longitudinalGrip: number,
         lateralGrip: number,
+        corneringStiffness: number,
     ): DynamicRayCastVehicleController {
         this.raw.add_tire_type(
             tireType,
@@ -1177,6 +1184,7 @@ export class DynamicRayCastVehicleController {
             slidingGrip,
             longitudinalGrip,
             lateralGrip,
+            corneringStiffness,
         );
         return this;
     }

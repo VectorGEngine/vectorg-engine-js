@@ -953,10 +953,22 @@ impl RawDynamicRayCastVehicleController {
         sliding: f32,
         longitudinal: f32,
         lateral: f32,
+        cornering_stiffness: f32,
     ) -> Result<(), JsValue> {
         validate_tire_grip(peak, sliding, longitudinal, lateral)?;
-        self.controller
-            .add_tire_type(tire_type, peak, sliding, longitudinal, lateral);
+        if !(cornering_stiffness.is_finite() && cornering_stiffness >= 0.0) {
+            return Err(JsValue::from_str(
+                "Tire corneringStiffness must be finite and non-negative",
+            ));
+        }
+        self.controller.add_tire_type(
+            tire_type,
+            peak,
+            sliding,
+            longitudinal,
+            lateral,
+            cornering_stiffness,
+        );
         Ok(())
     }
 
