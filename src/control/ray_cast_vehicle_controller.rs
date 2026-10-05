@@ -266,6 +266,7 @@ impl RawVehicleControllerConfig {
         &mut self,
         max_angle: Real,
         road_wheel_curve: Real,
+        ackermann: Real,
         speed_sensitivity: Real,
         minimum_speed_factor: Real,
         assist: bool,
@@ -274,6 +275,7 @@ impl RawVehicleControllerConfig {
         let steering = &mut self.config.steering;
         steering.max_angle = max_angle;
         steering.road_wheel_curve = road_wheel_curve;
+        steering.ackermann = ackermann;
         steering.speed_sensitivity = speed_sensitivity;
         steering.minimum_speed_factor = minimum_speed_factor;
         steering.assist = assist;

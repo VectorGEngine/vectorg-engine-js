@@ -75,6 +75,11 @@ export interface VehicleSteeringConfig {
     maxAngle: number;
     /** Linear-to-cubic road-wheel response (`0` = linear, `1` = cubic). */
     roadWheelCurve: number;
+    /**
+     * Percent Ackermann (`1` = full Ackermann, `0` = parallel steering,
+     * `-1` = full anti-Ackermann).
+     */
+    ackermann: number;
     /** Speed where assisted steering reaches its minimum multiplier. */
     speedSensitivity: number;
     /** Assisted steering multiplier retained at and above the sensitivity speed. */
@@ -350,6 +355,7 @@ export class DynamicRayCastVehicleController {
         rawConfig.set_steering(
             steering.maxAngle,
             steering.roadWheelCurve,
+            steering.ackermann,
             steering.speedSensitivity,
             steering.minimumSpeedFactor,
             steering.assist,
