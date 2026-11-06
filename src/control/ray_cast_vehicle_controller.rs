@@ -956,11 +956,17 @@ impl RawDynamicRayCastVehicleController {
         longitudinal: f32,
         lateral: f32,
         cornering_stiffness: f32,
+        load_sensitivity: f32,
     ) -> Result<(), JsValue> {
         validate_tire_grip(peak, sliding, longitudinal, lateral)?;
         if !(cornering_stiffness.is_finite() && cornering_stiffness >= 0.0) {
             return Err(JsValue::from_str(
                 "Tire corneringStiffness must be finite and non-negative",
+            ));
+        }
+        if !(0.0..=1.0).contains(&load_sensitivity) {
+            return Err(JsValue::from_str(
+                "Tire loadSensitivity must lie between 0 and 1",
             ));
         }
         self.controller.add_tire_type(
@@ -970,6 +976,7 @@ impl RawDynamicRayCastVehicleController {
             longitudinal,
             lateral,
             cornering_stiffness,
+            load_sensitivity,
         );
         Ok(())
     }

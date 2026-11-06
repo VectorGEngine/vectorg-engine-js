@@ -1175,6 +1175,12 @@ export class DynamicRayCastVehicleController {
      * lateral force in proportion to its slip angle up to the friction limit,
      * like a real tire, instead of cancelling all side speed it has grip for.
      * Zero keeps the tire rigid. Negative or non-finite values are rejected.
+     *
+     * `loadSensitivity` is the exponent the tire's grip force follows in wheel
+     * load, from 0 to 1, against the load the wheel carries at rest: 1 keeps
+     * grip proportional to load, lower values make the friction coefficient
+     * fall as load rises, so weight transfer costs the loaded axle grip.
+     * Values outside 0 to 1 are rejected.
      */
     public addTireType(
         tireType: string,
@@ -1183,6 +1189,7 @@ export class DynamicRayCastVehicleController {
         longitudinalGrip: number,
         lateralGrip: number,
         corneringStiffness: number,
+        loadSensitivity: number,
     ): DynamicRayCastVehicleController {
         this.raw.add_tire_type(
             tireType,
@@ -1191,6 +1198,7 @@ export class DynamicRayCastVehicleController {
             longitudinalGrip,
             lateralGrip,
             corneringStiffness,
+            loadSensitivity,
         );
         return this;
     }
