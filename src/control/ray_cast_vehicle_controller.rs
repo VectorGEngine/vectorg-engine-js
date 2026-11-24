@@ -183,14 +183,18 @@ impl RawVehicleControllerConfig {
         &mut self,
         enabled: bool,
         max_boost: Real,
-        spool_rate: Real,
-        release_rate: Real,
+        boost_rpm: Real,
+        spool_curve: Real,
+        spool_time: Real,
+        spin_down_time: Real,
     ) {
         let turbo = &mut self.config.turbo;
         turbo.enabled = enabled;
         turbo.max_boost = max_boost;
-        turbo.spool_rate = spool_rate;
-        turbo.release_rate = release_rate;
+        turbo.boost_rpm = boost_rpm;
+        turbo.spool_curve = spool_curve;
+        turbo.spool_time = spool_time;
+        turbo.spin_down_time = spin_down_time;
     }
 
     pub fn set_dynamics(
@@ -419,8 +423,14 @@ impl RawDynamicRayCastVehicleController {
     pub fn turbo_load(&self) -> Real {
         self.controller.state().turbo_load
     }
+    pub fn turbo_speed(&self) -> Real {
+        self.controller.state().turbo_speed
+    }
     pub fn turbo_release_sequence(&self) -> u32 {
         self.controller.state().turbo_release_sequence
+    }
+    pub fn turbo_release_load(&self) -> Real {
+        self.controller.state().turbo_release_load
     }
     pub fn wheels_in_contact(&self) -> usize {
         self.controller.state().wheels_in_contact

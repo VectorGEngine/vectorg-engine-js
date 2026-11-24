@@ -41,9 +41,16 @@ export interface VehicleTransmissionConfig {
 
 export interface VehicleTurboConfig {
     enabled: boolean;
+    /** Engine-torque multiplier at full boost. */
     maxBoost: number;
-    spoolRate: number;
-    releaseRate: number;
+    /** Engine RPM at which full throttle gives full boost. */
+    boostRpm: number;
+    /** Exponent of the boost target below `boostRpm`. */
+    spoolCurve: number;
+    /** Time constant in seconds of the turbo shaft speed-up. */
+    spoolTime: number;
+    /** Time constant in seconds of the turbo shaft spin-down. */
+    spinDownTime: number;
 }
 
 export interface VehicleDynamicsConfig {
@@ -183,8 +190,14 @@ export interface VehicleState {
     driverSteeringAngle: number;
     engineLoad: number;
     revLimiterAmount: number;
+    /** Boost pressure, 0..1 of the maximum boost. */
     turboLoad: number;
+    /** Turbo shaft speed, 0..1. */
+    turboSpeed: number;
+    /** Incremented whenever the blow-off valve releases boost. */
     turboReleaseSequence: number;
+    /** Boost pressure (0..1) at the latest blow-off release. */
+    turboReleaseLoad: number;
     wheelsInContact: number;
     absActivity: number;
     escActivity: number;
@@ -316,8 +329,10 @@ export class DynamicRayCastVehicleController {
         rawConfig.set_turbo(
             turbo.enabled,
             turbo.maxBoost,
-            turbo.spoolRate,
-            turbo.releaseRate,
+            turbo.boostRpm,
+            turbo.spoolCurve,
+            turbo.spoolTime,
+            turbo.spinDownTime,
         );
         const dynamics = config.dynamics;
         rawConfig.set_dynamics(
@@ -531,7 +546,9 @@ export class DynamicRayCastVehicleController {
             engineLoad: this.raw.engine_load(),
             revLimiterAmount: this.raw.rev_limiter_amount(),
             turboLoad: this.raw.turbo_load(),
+            turboSpeed: this.raw.turbo_speed(),
             turboReleaseSequence: this.raw.turbo_release_sequence(),
+            turboReleaseLoad: this.raw.turbo_release_load(),
             wheelsInContact: this.raw.wheels_in_contact(),
             absActivity: this.raw.abs_activity(),
             escActivity: this.raw.esc_activity(),
