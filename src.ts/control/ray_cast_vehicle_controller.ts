@@ -1352,6 +1352,21 @@ export class DynamicRayCastVehicleController {
         return this.raw.wheel_side_impulse(i);
     }
 
+    /** Reaction torque about the wheel steering axis, in N·m. */
+    public wheelSteeringFeedbackTorque(i: number): number | null {
+        return this.raw.wheel_steering_feedback_torque(i);
+    }
+
+    /** Combined tire demand relative to the grip limit. */
+    public wheelFeedbackSlip(i: number): number | null {
+        return this.raw.wheel_feedback_slip(i);
+    }
+
+    /** Flat-spot vibration from the tire contact, from -1 to 1. */
+    public wheelFlatSpotFeedback(i: number): number | null {
+        return this.raw.wheel_flat_spot_feedback(i);
+    }
+
     /** Last physics query and final tire impulses in world coordinates.
      * Status: 0 uninitialized, 1 miss, 2 rejected angle, 3 rejected travel, 4 contact.
      * Impulses are N.s; divide by the updateVehicle timestep for average force.

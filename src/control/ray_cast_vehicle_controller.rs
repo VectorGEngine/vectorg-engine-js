@@ -1090,6 +1090,18 @@ impl RawDynamicRayCastVehicleController {
         self.controller.wheels().get(i).map(|w| w.side_impulse)
     }
 
+    pub fn wheel_steering_feedback_torque(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.steering_feedback_torque)
+    }
+
+    pub fn wheel_feedback_slip(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.feedback_slip)
+    }
+
+    pub fn wheel_flat_spot_feedback(&self, i: usize) -> Option<Real> {
+        self.controller.wheels().get(i).map(|w| w.flat_spot_feedback)
+    }
+
     /// Packed world-space wheel debug sample; layout decoded by the TS wrapper.
     pub fn wheel_debug_sample(&self, i: usize) -> Option<Vec<f32>> {
         self.controller.wheels().get(i).map(|w| {
