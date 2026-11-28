@@ -858,35 +858,35 @@ export class DynamicRayCastVehicleController {
     }
 
     /**
-     * The i-th wheel’s suspension’s damping when it is being compressed.
+     * The i-th wheel’s bump damping: the damper force while the suspension compresses.
      */
-    public wheelSuspensionCompression(i: number): number | null {
-        return this.raw.wheel_suspension_compression(i);
+    public wheelSuspensionBumpDamping(i: number): number | null {
+        return this.raw.wheel_suspension_bump_damping(i);
     }
 
     /**
-     * The i-th wheel’s suspension’s damping when it is being compressed.
+     * Sets the i-th wheel’s bump damping: the damper force while the suspension compresses.
      */
-    public setWheelSuspensionCompression(i: number, value: number) {
-        this.raw.set_wheel_suspension_compression(i, value);
+    public setWheelSuspensionBumpDamping(i: number, value: number) {
+        this.raw.set_wheel_suspension_bump_damping(i, value);
     }
 
     /**
-     * The i-th wheel’s suspension’s damping when it is being released.
+     * The i-th wheel’s rebound damping: the damper force while the suspension extends.
      *
      * Increase this value if the suspension appears to overshoot.
      */
-    public wheelSuspensionRelaxation(i: number): number | null {
-        return this.raw.wheel_suspension_relaxation(i);
+    public wheelSuspensionReboundDamping(i: number): number | null {
+        return this.raw.wheel_suspension_rebound_damping(i);
     }
 
     /**
-     * Sets the i-th wheel’s suspension’s damping when it is being released.
+     * Sets the i-th wheel’s rebound damping: the damper force while the suspension extends.
      *
      * Increase this value if the suspension appears to overshoot.
      */
-    public setWheelSuspensionRelaxation(i: number, value: number) {
-        this.raw.set_wheel_suspension_relaxation(i, value);
+    public setWheelSuspensionReboundDamping(i: number, value: number) {
+        this.raw.set_wheel_suspension_rebound_damping(i, value);
     }
 
     /**

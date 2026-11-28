@@ -754,27 +754,27 @@ impl RawDynamicRayCastVehicleController {
         }
     }
 
-    pub fn wheel_suspension_compression(&self, i: usize) -> Option<Real> {
+    pub fn wheel_suspension_bump_damping(&self, i: usize) -> Option<Real> {
         self.controller
             .wheels()
             .get(i)
-            .map(|w| w.damping_compression)
+            .map(|w| w.damping_bump)
     }
-    pub fn set_wheel_suspension_compression(&mut self, i: usize, value: Real) {
+    pub fn set_wheel_suspension_bump_damping(&mut self, i: usize, value: Real) {
         if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
-            wheel.damping_compression = value;
+            wheel.damping_bump = value;
         }
     }
 
-    pub fn wheel_suspension_relaxation(&self, i: usize) -> Option<Real> {
+    pub fn wheel_suspension_rebound_damping(&self, i: usize) -> Option<Real> {
         self.controller
             .wheels()
             .get(i)
-            .map(|w| w.damping_relaxation)
+            .map(|w| w.damping_rebound)
     }
-    pub fn set_wheel_suspension_relaxation(&mut self, i: usize, value: Real) {
+    pub fn set_wheel_suspension_rebound_damping(&mut self, i: usize, value: Real) {
         if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
-            wheel.damping_relaxation = value;
+            wheel.damping_rebound = value;
         }
     }
 
