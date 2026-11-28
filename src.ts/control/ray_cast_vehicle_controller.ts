@@ -51,12 +51,8 @@ export interface VehicleTurboConfig {
     maxBoost: number;
     /** Engine RPM at which full throttle gives full boost. */
     boostRpm: number;
-    /** Exponent of the boost target below `boostRpm`. */
-    spoolCurve: number;
-    /** Time constant in seconds of the turbo shaft speed-up. */
+    /** Seconds from opening the throttle to 90% boost at `boostRpm`. */
     spoolTime: number;
-    /** Time constant in seconds of the turbo shaft spin-down. */
-    spinDownTime: number;
 }
 
 export interface VehicleDynamicsConfig {
@@ -339,9 +335,7 @@ export class DynamicRayCastVehicleController {
             turbo.enabled,
             turbo.maxBoost,
             turbo.boostRpm,
-            turbo.spoolCurve,
             turbo.spoolTime,
-            turbo.spinDownTime,
         );
         const dynamics = config.dynamics;
         rawConfig.set_dynamics(

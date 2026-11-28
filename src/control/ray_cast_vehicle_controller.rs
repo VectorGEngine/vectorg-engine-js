@@ -183,22 +183,12 @@ impl RawVehicleControllerConfig {
         transmission.stopped_speed = stopped_speed;
     }
 
-    pub fn set_turbo(
-        &mut self,
-        enabled: bool,
-        max_boost: Real,
-        boost_rpm: Real,
-        spool_curve: Real,
-        spool_time: Real,
-        spin_down_time: Real,
-    ) {
+    pub fn set_turbo(&mut self, enabled: bool, max_boost: Real, boost_rpm: Real, spool_time: Real) {
         let turbo = &mut self.config.turbo;
         turbo.enabled = enabled;
         turbo.max_boost = max_boost;
         turbo.boost_rpm = boost_rpm;
-        turbo.spool_curve = spool_curve;
         turbo.spool_time = spool_time;
-        turbo.spin_down_time = spin_down_time;
     }
 
     pub fn set_dynamics(
