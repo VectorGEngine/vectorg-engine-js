@@ -9,6 +9,12 @@ import {Collider, ColliderSet, InteractionGroups} from "../geometry";
 import {QueryFilterFlags, QueryPipeline} from "../pipeline";
 import {RigidBody, RigidBodyHandle, RigidBodySet} from "../dynamics";
 
+/** Converts an ABS setting and the car's level count to a slip target. */
+export function absSlipTarget(strength: number, maxLevel: number): number {
+    const count = Number.isInteger(maxLevel) && maxLevel > 0 ? maxLevel : 0;
+    return RawVehicleControllerConfig.abs_slip_target(strength, count);
+}
+
 export interface VehicleEngineConfig {
     horsepower: number;
     idleRpm: number;
@@ -55,8 +61,11 @@ export interface VehicleTurboConfig {
 
 export interface VehicleDynamicsConfig {
     brakeBias: number;
-    absStrength: number;
+    /** Target braking slip ratio. Zero disables ABS. */
+    absSlipTarget: number;
     tractionControlStrength: number;
+    /** Number of active traction control levels. */
+    tractionControlMaxLevel?: number;
     escStrength: number;
     frontAntiRollBarStiffness: number;
     rearAntiRollBarStiffness: number;
@@ -337,7 +346,7 @@ export class DynamicRayCastVehicleController {
         const dynamics = config.dynamics;
         rawConfig.set_dynamics(
             dynamics.brakeBias,
-            dynamics.absStrength,
+            dynamics.absSlipTarget,
             dynamics.tractionControlStrength,
             dynamics.escStrength,
             dynamics.frontAntiRollBarStiffness,
@@ -349,6 +358,7 @@ export class DynamicRayCastVehicleController {
             dynamics.linearDampingPerSpeed,
             dynamics.baseAngularDamping,
             dynamics.angularDampingPerSpeed,
+            dynamics.tractionControlMaxLevel,
         );
         const positions = new Float32Array(downforce.points.length * 3);
         const maxForces = new Float32Array(downforce.points.length);
@@ -1033,12 +1043,7 @@ export class DynamicRayCastVehicleController {
         this.raw.set_wheel_max_brake_force(i, value);
     }
 
-    /**
-     * The i-th wheel’s anti-lock brake value.
-     *
-     * This is the anti-lock brake value applied on the i-th wheel to prevent it from locking up.
-     * 0.0 means no anti-lock brake is applied, 1.0 means the maximum anti-lock brake is applied.
-     */
+    /** The i-th wheel's target braking slip ratio. Zero disables ABS. */
     public wheelAntiLockBrake(i: number): number {
         return this.raw.wheel_anti_lock_brake(i);
     }
@@ -1047,12 +1052,7 @@ export class DynamicRayCastVehicleController {
         return this.raw.wheel_is_anti_lock_brake(i);
     }
 
-    /**
-     * The i-th wheel’s anti-lock brake value.
-     *
-     * This is the anti-lock brake value applied on the i-th wheel to prevent it from locking up.
-     * 0 means no anti-lock brake is applied, 1 means the maximum anti-lock brake is applied.
-     */
+    /** Sets the i-th wheel's target braking slip ratio. Zero disables ABS. */
     public setWheelAntiLockBrake(i: number, value: number) {
         this.raw.set_wheel_anti_lock_brake(i, value);
     }
@@ -1126,7 +1126,7 @@ export class DynamicRayCastVehicleController {
     public setDynamics(dynamics: VehicleDynamicsConfig) {
         this.raw.set_dynamics(
             dynamics.brakeBias,
-            dynamics.absStrength,
+            dynamics.absSlipTarget,
             dynamics.tractionControlStrength,
             dynamics.escStrength,
             dynamics.frontAntiRollBarStiffness,
@@ -1138,6 +1138,7 @@ export class DynamicRayCastVehicleController {
             dynamics.linearDampingPerSpeed,
             dynamics.baseAngularDamping,
             dynamics.angularDampingPerSpeed,
+            dynamics.tractionControlMaxLevel,
         );
     }
 

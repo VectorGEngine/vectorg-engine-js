@@ -82,6 +82,10 @@ pub struct RawVehicleControllerConfig {
 
 #[wasm_bindgen]
 impl RawVehicleControllerConfig {
+    pub fn abs_slip_target(strength: f64, max_level: u32) -> f64 {
+        engine::control::abs_slip_target(strength, max_level)
+    }
+
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         Self {
@@ -200,7 +204,7 @@ impl RawVehicleControllerConfig {
     pub fn set_dynamics(
         &mut self,
         brake_bias: Real,
-        abs_strength: Real,
+        abs_slip_target: Real,
         traction_control_strength: Real,
         esc_strength: Real,
         front_anti_roll_bar_stiffness: Real,
@@ -212,11 +216,13 @@ impl RawVehicleControllerConfig {
         linear_damping_per_speed: Real,
         base_angular_damping: Real,
         angular_damping_per_speed: Real,
+        traction_control_max_level: Option<u32>,
     ) {
         let dynamics = &mut self.config.dynamics;
         dynamics.brake_bias = brake_bias;
-        dynamics.abs_strength = abs_strength;
+        dynamics.abs_slip_target = abs_slip_target;
         dynamics.traction_control_strength = traction_control_strength;
+        dynamics.traction_control_max_level = traction_control_max_level.unwrap_or(0);
         dynamics.esc_strength = esc_strength;
         dynamics.front_anti_roll_bar_stiffness = front_anti_roll_bar_stiffness;
         dynamics.rear_anti_roll_bar_stiffness = rear_anti_roll_bar_stiffness;
@@ -870,11 +876,11 @@ impl RawDynamicRayCastVehicleController {
     }
 
     pub fn wheel_anti_lock_brake(&self, i: usize) -> Option<Real> {
-        self.controller.wheels().get(i).map(|w| w.anti_lock_brake)
+        self.controller.wheels().get(i).map(|w| w.abs_slip_target)
     }
     pub fn set_wheel_anti_lock_brake(&mut self, i: usize, value: Real) {
         if let Some(wheel) = self.controller.wheels_mut().get_mut(i) {
-            wheel.anti_lock_brake = value;
+            wheel.abs_slip_target = value;
         }
     }
 
@@ -911,7 +917,7 @@ impl RawDynamicRayCastVehicleController {
     pub fn set_dynamics(
         &mut self,
         brake_bias: Real,
-        abs_strength: Real,
+        abs_slip_target: Real,
         traction_control_strength: Real,
         esc_strength: Real,
         front_anti_roll_bar_stiffness: Real,
@@ -923,12 +929,16 @@ impl RawDynamicRayCastVehicleController {
         linear_damping_per_speed: Real,
         base_angular_damping: Real,
         angular_damping_per_speed: Real,
+        traction_control_max_level: Option<u32>,
     ) {
         // Downforce is left alone: it has its own setter and its own shape.
         let mut dynamics = self.controller.dynamics().clone();
         dynamics.brake_bias = brake_bias;
-        dynamics.abs_strength = abs_strength;
+        dynamics.abs_slip_target = abs_slip_target;
         dynamics.traction_control_strength = traction_control_strength;
+        if let Some(max_level) = traction_control_max_level {
+            dynamics.traction_control_max_level = max_level;
+        }
         dynamics.esc_strength = esc_strength;
         dynamics.front_anti_roll_bar_stiffness = front_anti_roll_bar_stiffness;
         dynamics.rear_anti_roll_bar_stiffness = rear_anti_roll_bar_stiffness;
@@ -1091,7 +1101,10 @@ impl RawDynamicRayCastVehicleController {
     }
 
     pub fn wheel_steering_feedback_torque(&self, i: usize) -> Option<Real> {
-        self.controller.wheels().get(i).map(|w| w.steering_feedback_torque)
+        self.controller
+            .wheels()
+            .get(i)
+            .map(|w| w.steering_feedback_torque)
     }
 
     pub fn wheel_feedback_slip(&self, i: usize) -> Option<Real> {
@@ -1099,7 +1112,10 @@ impl RawDynamicRayCastVehicleController {
     }
 
     pub fn wheel_flat_spot_feedback(&self, i: usize) -> Option<Real> {
-        self.controller.wheels().get(i).map(|w| w.flat_spot_feedback)
+        self.controller
+            .wheels()
+            .get(i)
+            .map(|w| w.flat_spot_feedback)
     }
 
     /// Packed world-space wheel debug sample; layout decoded by the TS wrapper.
